@@ -53,5 +53,5 @@ class Pion:
   def setIsArrived(self, IsArrived):
     self.IsArrived = IsArrived
 
-a = Player('BLACK', 10)
-a.printStatus()
+# a = Player('BLACK', 10)
+# a.printStatus()

@@ -1,4 +1,4 @@
-from Player import Player
+from player import Player
 
 class Board:
   def __init__(self, boardSize, timeLimit):
@@ -14,3 +14,6 @@ class Board:
     for pawn in self.player2.pawns:
       tempPosisiPion.append((pawn.x, pawn.y))
     tempPosisiPion.sort()
+  
+  def getSize(self):
+    return self.boardSize
