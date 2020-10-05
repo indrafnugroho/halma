@@ -80,7 +80,7 @@ class BoardGUI(tk.Tk):
                 self.tiles[row,col] = tile
                 self.canvas.tag_bind(tile, "<1>", lambda event, row=row, col=col: self.clicked(row, col))
 
-            self.drawPawn()
+        self.drawPawn()
 
     def clicked(self, row, column):
         #TODO yang ada pionnya blm bisa diclick
@@ -100,14 +100,18 @@ class BoardGUI(tk.Tk):
         player1Pawn = self.board.player1.pawns
         player2Pawn = self.board.player2.pawns
 
+        # delete previous pawns canvas
+        self.canvas.delete('pawn')
+
         for i in range(len(player1Pawn)):
             col = player1Pawn[i].x - 1
-            row = player1Pawn[i].y -1 
+            row = player1Pawn[i].y - 1 
             x1 = col * cell + border_size / 2
             y1 = row * cell + border_size / 2
             x2 = (col + 1) * cell - border_size / 2
             y2 = (row + 1) * cell - border_size / 2
             pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#CF6E67")
+            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row, col))
 
         for i in range(len(player2Pawn)):
             col = self.board_size - player2Pawn[i].x
@@ -117,7 +121,10 @@ class BoardGUI(tk.Tk):
             x2 = (col + 1) * cell - border_size / 2
             y2 = (row + 1) * cell - border_size / 2
             pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#67BF9B")
-        self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row, col))
+            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row, col))
+
+        # update pawn's coordinate everytime it moves
+        self.update()
 
 
 if __name__ == '__main__':
