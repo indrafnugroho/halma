@@ -1,8 +1,9 @@
+
 class Player:
   def __init__(self, color, boardSize):
     self.color = color
     self.makeRegionPawns(boardSize)
-
+    
   def makeRegionPawns(self, boardSize):
     self.pawns = []
     self.home = []
@@ -26,6 +27,11 @@ class Player:
       temp = self.home.copy()
       self.home = self.goal.copy()
       self.goal = temp
+      for i in range(0, len(self.home)):
+        # print(self.pawns[i].x)
+        self.pawns[i].x = self.home[i][0]
+        self.pawns[i].y = self.home[i][1]
+              
 
   def printStatus(self):
     print('Color: '+ self.color)
@@ -33,7 +39,19 @@ class Player:
     for pawn in self.pawns:
       print('({x}, {y})'.format(x=pawn.x, y=pawn.y))
   
-
+  #all pawn in oponent base
+  def isTerminate(self):
+    goal = self.goal
+    pawns = self.pawns
+    status = True
+    for i in range(len(pawns)):
+        pion = (pawns[i].x, pawns[i].y)
+        if pion in goal:
+            status = True
+        else:
+            status = False
+            break
+    return status
 
 # 8, 10, 16
 # 10, 15, 19
@@ -55,11 +73,7 @@ class Pion:
   def setIsArrived(self, IsArrived):
     self.IsArrived = IsArrived
 
-<<<<<<< Updated upstream
 # a = Player('BLACK', 10)
 # a.printStatus()
-=======
-# a = Player('WHITE', 10)
-# a.printStatus()
 # print(a.goal)
->>>>>>> Stashed changes
+# print(a.isTerminate())

@@ -14,11 +14,6 @@ class Board:
     for pawn in self.player2.pawns:
       tempPosisiPion.append((pawn.x, pawn.y))
     tempPosisiPion.sort()
-<<<<<<< Updated upstream
   
   def getSize(self):
     return self.boardSize
-=======
-
-# b = Board(16, 10)
->>>>>>> Stashed changes
