@@ -32,6 +32,8 @@ class Player:
     print('Position of pawns:')
     for pawn in self.pawns:
       print('({x}, {y})'.format(x=pawn.x, y=pawn.y))
+  
+
 
 # 8, 10, 16
 # 10, 15, 19
@@ -53,5 +55,11 @@ class Pion:
   def setIsArrived(self, IsArrived):
     self.IsArrived = IsArrived
 
+<<<<<<< Updated upstream
 # a = Player('BLACK', 10)
 # a.printStatus()
+=======
+# a = Player('WHITE', 10)
+# a.printStatus()
+# print(a.goal)
+>>>>>>> Stashed changes
