@@ -24,19 +24,65 @@ class Board:
     else:
       return True
   
-  def isKoordHome(self, player, x,y):
+  def isKoordHome(self, player, x, y):
     if(player==1):
       return(self.player1.isExist_home(x,y))
     else:
       return(self.player2.isExist_home(x,y))
       
     
-  def isKoordGoal(self, player, x,y):
+  def isKoordGoal(self, player, x, y):
     if(player==1):
       return(self.player1.isExist_goal(x,y))
     else:
-      return(self.player2.isExist_goal(x,y))
-  
+      return(self.player2.isExist_goal(x,y)) 
+    
+  def checkAvailablePosition(self, position):
+    # mengecek semua yang berdelta 1 itu kosong, dan gak melebihi size board
+    x, y = position
+    availablePosition = []
+
+    availablePosition += (x+1,y)
+    availablePosition += (x-1,y)
+    availablePosition += (x,y+1)
+    availablePosition += (x,y-1)
+    availablePosition += (x+1,y+1)
+    availablePosition += (x+1,y-1)
+    availablePosition += (x-1,y-1)
+    availablePosition += (x-1,y+1)
+    
+    j = len(availablePosition)
+    for i in range (j):
+      x, y = availablePosition[i]
+
+      # jika diluar board
+      if(x< 1 or y<1 or x>self.boardSize or y>self.boardSize):
+        availablePosition.remove(availablePosition[i])
+
+      # jika ada isinya
+      elif not(self.isEmpty()):
+        availablePosition.remove(availablePosition[i])
+    
+    return availablePosition
+        
+        
+  def getAksiValid(self, pawn):
+    if (self.player1.isExist_Pawns(pawn.getCoordinateX, pawn.getCoordinateY)):
+        player = self.player1
+    else:
+        player = self.player2
+
+    aksi = []
+    current_position = pawn.getCoordinate()
+    availablePosition = self.checkAvailablePosition(current_position)
+    # Cek keluar home atau masuk base
+    j = len(availablePosition)
+    for i in range (j):
+      x, y = availablePosition[i]
+      if (pawn.isArrived and (self.isKoordGoal(player, x, y))) or (pawn.isDeparted and (self.isKoordHome(player, x ,y))):
+        availablePosition.remove(availablePosition[i])
+    
+    
   # def isValid(self, posX, posY, desX, desY):
   #   status = True
   #   if((desX >=1 and desX <= self.boardSize) and desY >=1 and desY <= self.boardSize):

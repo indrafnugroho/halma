@@ -107,8 +107,8 @@ class Pion:
   def getCoordinate(self):
     return (self.x, self.y)
 
-# a = Player('BLACK', 10)
-# a.printStatus()
+a = Player('BLACK', 10)
+a.printStatus()
 # a = Player('WHITE', 10)
 # a.printStatus()
 # print(a.home)

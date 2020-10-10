@@ -128,6 +128,6 @@ class BoardGUI(tk.Tk):
 
 
 if __name__ == '__main__':
-    board = Board(8,3)
+    board = Board(10,3)
     gui = BoardGUI(board)
     gui.mainloop()

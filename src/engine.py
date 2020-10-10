@@ -6,8 +6,8 @@ class engine:
         self.board = Board(boardsize,timelimit)
     
     def terminate_state(self,player):
-        player1 = self.board.player1
-        player2 = self.board.player2
+        self.player1 = self.board.player1
+        self.player2 = self.board.player2
         if(player1.isTerminate() and not(player2.isTerminate())):
             result = 1
         elif(player2.isTerminate() and not(player1.isTerminate())):
@@ -19,8 +19,6 @@ class engine:
             result *= -1
         return result
         
-        
-
                         
                         
 
