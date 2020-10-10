@@ -37,19 +37,19 @@ class Board:
     else:
       return(self.player2.isExist_goal(x,y)) 
     
-  def checkAvailablePosition(self, position):
+  def checkAvailablePosition(self, position, delta):
     # mengecek semua yang berdelta 1 itu kosong, dan gak melebihi size board
     x, y = position
     availablePosition = []
 
-    availablePosition += (x+1,y)
-    availablePosition += (x-1,y)
-    availablePosition += (x,y+1)
-    availablePosition += (x,y-1)
-    availablePosition += (x+1,y+1)
-    availablePosition += (x+1,y-1)
-    availablePosition += (x-1,y-1)
-    availablePosition += (x-1,y+1)
+    availablePosition += (x+delta, y)
+    availablePosition += (x-delta, y)
+    availablePosition += (x, y+delta)
+    availablePosition += (x, y-delta)
+    availablePosition += (x+delta, y+delta)
+    availablePosition += (x+delta, y-delta)
+    availablePosition += (x-delta, y-delta)
+    availablePosition += (x-delta, y+delta)
 
     length = len(availablePosition)
     i = 0
@@ -57,7 +57,7 @@ class Board:
     while (i < length):
       x, y = availablePosition[i]
       # jika diluar board
-      if(x< 1 or y<1 or x>self.boardSize or y>self.boardSize):
+      if(x<1 or y<1 or x>self.boardSize or y>self.boardSize):
         availablePosition.remove(availablePosition[i])
         length -= 1
 
@@ -69,7 +69,16 @@ class Board:
         i += 1
     
     return availablePosition
-        
+
+  def getJump(self, position, jumps, last_position):
+    availableJumps = self.checkAvailablePosition(position, 2) 
+    availableJumps.remove(last_position)
+    if (len(availableJumps) ==  0):
+      return jumps
+    else:
+      for i in range (len(availableJumps)):
+        jumps += availableJumps[i]
+        self.getJump(availableJumps[i], jumps, position)
         
   def getAksiValid(self, pawn):
     if (self.player1.isExist_Pawns(pawn.getCoordinateX, pawn.getCoordinateY)):
@@ -77,9 +86,13 @@ class Board:
     else:
         player = self.player2
 
-    aksi = []
     current_position = pawn.getCoordinate()
-    availablePosition = self.checkAvailablePosition(current_position)
+    availablePosition = self.checkAvailablePosition(current_position, 1)
+    availableJump = self.checkAvailablePosition(current_position,2)
+    for i in range (len(availableJump)):
+      jumps = []
+      getJump(availableJump[i], jumps, current_position)
+      availableJump += jumps
     # Cek keluar home atau masuk base
     length = len(availablePosition)
     i = 0
@@ -102,4 +115,4 @@ class Board:
 
 if __name__ == "__main__":      
   c = Board(16, 10)
-  print(c.isEmpty(6,4))
+
