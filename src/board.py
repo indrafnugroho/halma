@@ -50,18 +50,23 @@ class Board:
     availablePosition += (x+1,y-1)
     availablePosition += (x-1,y-1)
     availablePosition += (x-1,y+1)
-    
-    j = len(availablePosition)
-    for i in range (j):
-      x, y = availablePosition[i]
 
+    length = len(availablePosition)
+    i = 0
+
+    while (i < length):
+      x, y = availablePosition[i]
       # jika diluar board
       if(x< 1 or y<1 or x>self.boardSize or y>self.boardSize):
         availablePosition.remove(availablePosition[i])
+        length -= 1
 
       # jika ada isinya
       elif not(self.isEmpty()):
         availablePosition.remove(availablePosition[i])
+        length -= 1
+      else:
+        i += 1
     
     return availablePosition
         
@@ -76,11 +81,16 @@ class Board:
     current_position = pawn.getCoordinate()
     availablePosition = self.checkAvailablePosition(current_position)
     # Cek keluar home atau masuk base
-    j = len(availablePosition)
-    for i in range (j):
+    length = len(availablePosition)
+    i = 0
+    while (i < length):
       x, y = availablePosition[i]
       if (pawn.isArrived and (self.isKoordGoal(player, x, y))) or (pawn.isDeparted and (self.isKoordHome(player, x ,y))):
         availablePosition.remove(availablePosition[i])
+        length -= 1
+      else:
+        i += 1
+
     
     
   # def isValid(self, posX, posY, desX, desY):
@@ -89,5 +99,7 @@ class Board:
   #     if((self.isEmpty(desX+1, desY)) or (self.isEmpty(desX,desY+1))):
   #       if((self.isEmpty(desX+2, desY)) and not(self.isEmpty(desX+1,desY)) or (self.isEmpty(desX, desY+2)) and not(self.isEmpty(desX,desY+1))):
           #departed
-# c = Board(16, 10)
-# print(c.isEmpty(6,4))
+
+if __name__ == "__main__":      
+  c = Board(16, 10)
+  print(c.isEmpty(6,4))
