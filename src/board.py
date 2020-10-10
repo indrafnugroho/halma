@@ -37,11 +37,11 @@ class Board:
     else:
       return(self.player2.isExist_goal(x,y))
   
-  def isValid(self, posX, posY, desX, desY):
-    status = True
-    if((desX >=1 and desX <= self.boardSize) and desY >=1 and desY <= self.boardSize):
-      if((self.isEmpty(desX+1, desY)) or (self.isEmpty(desX,desY+1))):
-        if((self.isEmpty(desX+2, desY)) and not(self.isEmpty(desX+1,desY)) or (self.isEmpty(desX, desY+2)) and not(self.isEmpty(desX,desY+1))):
+  # def isValid(self, posX, posY, desX, desY):
+  #   status = True
+  #   if((desX >=1 and desX <= self.boardSize) and desY >=1 and desY <= self.boardSize):
+  #     if((self.isEmpty(desX+1, desY)) or (self.isEmpty(desX,desY+1))):
+  #       if((self.isEmpty(desX+2, desY)) and not(self.isEmpty(desX+1,desY)) or (self.isEmpty(desX, desY+2)) and not(self.isEmpty(desX,desY+1))):
           #departed
 # c = Board(16, 10)
 # print(c.isEmpty(6,4))
