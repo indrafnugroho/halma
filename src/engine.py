@@ -8,19 +8,17 @@ class engine:
     def terminate_state(self,player):
         player1 = self.board.player1
         player2 = self.board.player2
-        
         if(player1.isTerminate() and not(player2.isTerminate())):
             result = 1
         elif(player2.isTerminate() and not(player1.isTerminate())):
             result = -1
         else:
             result = 0 #0 for notterminate
-            
         #for player2
         if(player == 2):
             result *= -1
-            
         return result
+        
         
 
                         

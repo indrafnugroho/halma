@@ -52,6 +52,31 @@ class Player:
             status = False
             break
     return status
+  
+  #cek if pawns contain x and y, true if yes
+  def isExist_pawns(self,x,y):
+    for i in range(len(self.pawns)):
+      if(self.pawns[i].getCoordinateX()== x and self.pawns[i].getCoordinateY()== y ):
+        return True
+        break
+      else:
+        pass
+    return False
+  
+  def isExist_home(self,x,y):
+    koor =(x, y)
+    if koor in self.home:
+      return True
+    else:
+      return False
+    
+    def isExist_goal(self,x,y):
+      koor =(x, y)
+      if koor in self.goal:
+        return True
+      else:
+        return False
+        
 
 # 8, 10, 16
 # 10, 15, 19
@@ -72,8 +97,20 @@ class Pion:
     
   def setIsArrived(self, IsArrived):
     self.IsArrived = IsArrived
+  
+  def getCoordinateX(self):
+    return (self.x)
+  
+  def getCoordinateY(self):
+    return (self.y)
+  
+  def getCoordinate(self):
+    return (self.x, self.y)
 
 # a = Player('BLACK', 10)
 # a.printStatus()
-# print(a.goal)
+# a = Player('WHITE', 10)
+# a.printStatus()
+# print(a.home)
+# print(a.isExist_home(8,9))
 # print(a.isTerminate())
