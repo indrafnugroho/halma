@@ -1,7 +1,8 @@
 from player import Player
 from board import Board
+import math
 
-class engine:
+class Engine:
     def __init__(self,boardsize,timelimit):
         self.board = Board(boardsize,timelimit)
     
@@ -31,5 +32,5 @@ class engine:
 
 # print(b.goal)
 
-e = engine(16,50)
-print(e.terminate_state(2))
+# e = Engine(16,50)
+# print(e.terminate_state(2))
