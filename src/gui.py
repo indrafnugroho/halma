@@ -78,19 +78,41 @@ class BoardGUI(tk.Tk):
                         color = '#BAA077'
                 tile = self.canvas.create_rectangle(x1, y1, x2, y2, tags="tile", width=0, fill=color)
                 self.tiles[row,col] = tile
-                self.canvas.tag_bind(tile, "<1>", lambda event, row=row, col=col: self.clicked(row, col))
+                self.canvas.tag_bind(tile, "<1>")
 
         self.drawPawn()
 
     def clicked(self, row, column):
-        #TODO yang ada pionnya blm bisa diclick
-        tile = self.tiles[row,column]
+        toBeBordered = []
+        tile = self.tiles[row -1, column-1]
+        print("tile = ", tile)
+        toBeBordered.append(tile)
         border = int(float(self.canvas.itemcget(tile, "width")))
         if border == 0:
             border = 2
+            for i in range (self.board_size):
+                for j in range (self.board_size):
+                    if (i == row-1 and j == column-1):
+                        self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 1)
+                    else:
+                        self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
+            if (self.board.player1.isExist_pawns(row, column)):
+                pawn = self.board.player1.getPawn(row, column)
+            elif (self.board.player2.isExist_pawns(row, column)):
+                pawn = self.board.player2.getPawn(row, column)
+            validMoves = self.board.getAksiValid(pawn)
+            print("valid moves = ", validMoves)
+            for i in range (len(validMoves)):
+                (x, y) = validMoves[i]
+                tile = self.tiles[x-1, y-1]
+                toBeBordered.append(tile)
         else:
-            border = 0
-        self.canvas.itemconfigure(tile, outline="black", width = border)
+            for i in range (self.board_size):
+                for j in range (self.board_size):
+                    self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
+        
+        for i in range (len(toBeBordered)):
+            self.canvas.itemconfigure(toBeBordered[i], outline="black", width = border)
 
     def drawPawn(self):
         canvas_width = 600
@@ -99,6 +121,8 @@ class BoardGUI(tk.Tk):
         cell = int(canvas_height / self.board_size)
         player1Pawn = self.board.player1.pawns
         player2Pawn = self.board.player2.pawns
+        # self.board.player1.printStatus()
+        # self.board.player2.printStatus()
 
         # delete previous pawns canvas
         self.canvas.delete('pawn')
@@ -110,24 +134,27 @@ class BoardGUI(tk.Tk):
             y1 = row * cell + border_size / 2
             x2 = (col + 1) * cell - border_size / 2
             y2 = (row + 1) * cell - border_size / 2
+            # print("pion player 1 ke-" + str(i) + " col = " + str(col) + " row = " + str(row))
             pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#CF6E67")
-            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row, col))
+            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1))
 
+        print("")
         for i in range(len(player2Pawn)):
-            col = self.board_size - player2Pawn[i].x
-            row = self.board_size - player2Pawn[i].y
+            col = player2Pawn[i].x - 1
+            row = player2Pawn[i].y - 1 
             x1 = col * cell + border_size / 2
             y1 = row * cell + border_size / 2
             x2 = (col + 1) * cell - border_size / 2
             y2 = (row + 1) * cell - border_size / 2
+            # print("pion player 2 ke-" + str(i) + " col = " + str(col) + " row = " + str(row))
             pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#67BF9B")
-            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row, col))
+            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1))
 
         # update pawn's coordinate everytime it moves
         self.update()
 
 
 if __name__ == '__main__':
-    board = Board(10,3)
+    board = Board(16,3)
     gui = BoardGUI(board)
     gui.mainloop()

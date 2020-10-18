@@ -17,7 +17,8 @@ class Player:
 
     for i in range(1, maxIter):
       for j in range(1, maxIter):
-        if (i + j <= maxIter and i < 6 and j < 6):
+        if (i + j <= maxIter and i < maxIter and j < maxIter):
+          print ("i = " + str(i) + " j = " + str(j))
           self.pawns.append(Pion(i, j))
           self.home.append((i, j))
           self.goal.append((boardSize - i + 1, boardSize - j + 1))
@@ -28,7 +29,6 @@ class Player:
       self.home = self.goal.copy()
       self.goal = temp
       for i in range(0, len(self.home)):
-        # print(self.pawns[i].x)
         self.pawns[i].x = self.home[i][0]
         self.pawns[i].y = self.home[i][1]
               
@@ -56,7 +56,7 @@ class Player:
   #cek if pawns contain x and y, true if yes
   def isExist_pawns(self,x,y):
     for i in range(len(self.pawns)):
-      if(self.pawns[i].getCoordinateX()== x and self.pawns[i].getCoordinateY()== y ):
+      if(self.pawns[i].x == x and self.pawns[i].y== y ):
         return True
         break
       else:
@@ -70,12 +70,26 @@ class Player:
     else:
       return False
     
-    def isExist_goal(self,x,y):
-      koor =(x, y)
-      if koor in self.goal:
-        return True
+  def isExist_goal(self,x,y):
+    koor =(x, y)
+    if koor in self.goal:
+      return True
+    else:
+      return False
+  
+  def getPawn(self, row, column):
+    i = 0
+    found = False
+    while (i < len(self.pawns)):
+      print (self.pawns[i].x, self.pawns[i].y)
+      if (self.pawns[i].x == row and self.pawns[i].y == column):
+        pawn = self.pawns[i]
+        return pawn
+        found = True
       else:
-        return False
+        i +=1
+
+
         
 
 # 8, 10, 16
@@ -109,8 +123,9 @@ class Pion:
 
 a = Player('BLACK', 10)
 a.printStatus()
-# a = Player('WHITE', 10)
-# a.printStatus()
+print(a.getPawn(10,10))
+# b = Player('WHITE', 10)
+# b.printStatus()
 # print(a.home)
 # print(a.isExist_home(8,9))
 # print(a.isTerminate())
