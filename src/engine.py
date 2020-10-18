@@ -21,7 +21,9 @@ class Engine:
     #         self.board.printBoard()
     #         print("Turn: ", turn)
     #         print("Available moves: ", available_moves)
-    #         to_x, to_y = tuple(input("Where do you want to move? [Write in (x,y)]"))
+    #         to_x, to_y = input("Where do you want to move? Write in [x,y] without []")
+    #         to_x = int(to_x)
+    #         to_y = int(to_y)
     #         print("Executing moves...")
     #         execute_moves()
     #         print()
@@ -49,15 +51,16 @@ class Engine:
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print("usage: python engine.py <boardsize> <timelimit> <gamesystem> [player]")
-        print("boardsize: 8, 10, 16")
-        print("player: RED/GREEN")
-        print("gamesystem: CMD/GUI")
+        print("(boardsize: 8, 10, 16)")
+        print("(timelimt: any number in second)")
+        print("(gamesystem: CMD/GUI)")
+        print("(player: RED/GREEN. Leave it blank for botVSbot)")
         exit()
 
     boardsize, timelimit, system = sys.argv[1:4]
     player = sys.argv[4] if len(sys.argv) == 5 else None
 
-    if boardsize not in ("8", "10", "16"):
+    if boardsize not in ["8", "10", "16"]:
         print("boardsize should be 8, 10, or 16")
         exit()    
 
@@ -69,14 +72,14 @@ if __name__ == "__main__":
     timelimit = int(timelimit)
     system = system.upper()
 
-    if (system not in ("CMD", "GUI")):
+    if system not in ["CMD", "GUI"]:
         print("gamesystem should be CMD/GUI")
+        exit()
     
     if player is not None:
         player = player.upper()
-
-    if player not in ("RED", "GREEN"):
-        print("player should be RED/GREEN")
-        exit()
+        if player not in ["RED", "GREEN"]:
+            print("player should be RED/GREEN")
+            exit()
             
     game = Engine(boardsize, timelimit, player, system)
