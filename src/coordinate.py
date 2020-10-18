@@ -12,3 +12,6 @@ class Coordinate:
 
     def setPawn(self, pawn):
         self.pawn = pawn
+
+    def printCoordinate(self):
+        print(str(self.x) + str(self.y) + self.color + str(self.pawn))
