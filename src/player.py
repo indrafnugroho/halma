@@ -3,6 +3,8 @@ class Player:
   def __init__(self, color, boardSize):
     self.color = color
     self.makeRegionPawns(boardSize)
+    self.home = []
+    self.goal = []
     
   def makeRegionPawns(self, boardSize):
     self.pawns = []
@@ -23,7 +25,7 @@ class Player:
           self.home.append((i, j))
           self.goal.append((boardSize - i + 1, boardSize - j + 1))
 
-    if self.color == 'BLACK':
+    if self.color == 'RED':
       # If an opposing player
       temp = self.home.copy()
       self.home = self.goal.copy()
@@ -121,11 +123,10 @@ class Pion:
   def getCoordinate(self):
     return (self.x, self.y)
 
-a = Player('BLACK', 10)
-a.printStatus()
-print(a.getPawn(10,10))
-# b = Player('WHITE', 10)
-# b.printStatus()
+# a = Player('BLACK', 10)
+# a.printStatus()
+# a = Player('WHITE', 10)
+# a.printStatus()
 # print(a.home)
 # print(a.isExist_home(8,9))
 # print(a.isTerminate())
