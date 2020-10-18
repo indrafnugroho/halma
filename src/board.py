@@ -287,6 +287,10 @@ class Board:
   #       if((self.isEmpty(desX+2, desY)) and not(self.isEmpty(desX+1,desY)) or (self.isEmpty(desX, desY+2)) and not(self.isEmpty(desX,desY+1))):
           #departed
 
+# board = Board(8, 100, "GREEN", "CMD")
+
+
+
 if __name__ == "__main__":      
   board = Board(8, 100, "GREEN", "CMD")
   board.printBoard()

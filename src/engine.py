@@ -15,15 +15,14 @@ class Engine:
         #     self.selfplay = True
         
         self.board = Board(boardsize,timelimit, player, system)
+    #     self.start()
     
     # def start(self):
-    #     while (self.terminate_state() == 0):
+    #     while (self.terminate_state(1) == 0):
     #         self.board.printBoard()
     #         print("Turn: ", turn)
     #         print("Available moves: ", available_moves)
-    #         to_x, to_y = input("Where do you want to move? Write in [x,y] without []")
-    #         to_x = int(to_x)
-    #         to_y = int(to_y)
+    #         to_x, to_y = tuple(input("Where do you want to move? [Write in (x,y)]"))
     #         print("Executing moves...")
     #         execute_moves()
     #         print()
@@ -36,9 +35,9 @@ class Engine:
     def terminate_state(self,player):
         self.player1 = self.board.player1
         self.player2 = self.board.player2
-        if(player1.isTerminate() and not(player2.isTerminate())):
+        if(self.player1.isTerminate() and not(self.player2.isTerminate())):
             result = 1
-        elif(player2.isTerminate() and not(player1.isTerminate())):
+        elif(self.player2.isTerminate() and not(self.player1.isTerminate())):
             result = -1
         else:
             result = 0 #0 for notterminate
@@ -46,15 +45,18 @@ class Engine:
         if(player == 2):
             result *= -1
         return result
-        
+
+# e = Engine(16,50, "GREEN", "CMD")
+# # e.terminate_state(1)
+# print(e.terminate_state(2))
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         print("usage: python engine.py <boardsize> <timelimit> <gamesystem> [player]")
-        print("(boardsize: 8, 10, 16)")
+        print("boardsize: 8, 10, 16")
         print("(timelimt: any number in second)")
-        print("(gamesystem: CMD/GUI)")
-        print("(player: RED/GREEN. Leave it blank for botVSbot)")
+        print("player: RED/GREEN")
+        print("gamesystem: CMD/GUI")
         exit()
 
     boardsize, timelimit, system = sys.argv[1:4]
@@ -72,14 +74,14 @@ if __name__ == "__main__":
     timelimit = int(timelimit)
     system = system.upper()
 
-    if system not in ["CMD", "GUI"]:
+    if (system not in ["CMD", "GUI"]):
         print("gamesystem should be CMD/GUI")
-        exit()
     
     if player is not None:
         player = player.upper()
-        if player not in ["RED", "GREEN"]:
-            print("player should be RED/GREEN")
-            exit()
+
+    if player not in ["RED", "GREEN"]:
+        print("player should be RED/GREEN")
+        exit()
             
     game = Engine(boardsize, timelimit, player, system)
