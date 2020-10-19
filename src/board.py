@@ -14,7 +14,7 @@ class Board:
     self.r_player = bot if bot.color == "RED" else player
     self.turn = "GREEN"
     self.coordinate = [[Coordinate(i, j) for i in range(self.boardSize)] for j in range(self.boardSize)]
-    self.depth = 1
+    self.depth = 3
     # self.system = system
     # if (system == "GUI"):
     #   self.GUI = BoardGUI(self.oa)
@@ -155,8 +155,9 @@ class Board:
       return jumps
     else:
       for i in range (len(availableJumps)):
-        jumps.append(availableJumps[i])
-        self.getJump(availableJumps[i], jumps, position)
+        if availableJumps[i] not in jumps:
+          jumps.append(availableJumps[i])
+          self.getJump(availableJumps[i], jumps, position)
         
   def getAksiValid(self, pawn):
     if (self.player.isExist_pawns(pawn.x, pawn.y)):
@@ -202,15 +203,18 @@ class Board:
       else:
         i += 1
     availablePosition = sorted(availablePosition, key=lambda tup: (tup[0], tup[1]))
+    # print("Available Position: ", availablePosition)
     return availablePosition
 
   def objectiveFunc(self, player):
 
-    def point_distance(x1, x2, y1, y2):
+    def point_distance(x1, y1, x2, y2):
       return math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
     val = 0
-    
+
+    ## Ini yang belom di ubah2
+
     for x in range(self.boardSize):
       for y in range(self.boardSize):
         c = self.coordinate[y][x]
@@ -222,6 +226,29 @@ class Board:
         elif (c.pawn == 2):
           goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in player.goalCoord if g.pawn != 2]
           val += max(goalDistances) if len(goalDistances) > 0 else -50
+    
+    
+    ## Ini dari Nanda nyoba ganti2, belom fix nanti mau diomongin dulu wkwk ##
+
+
+    # for x in range(self.boardSize):
+    #   for y in range(self.boardSize):
+    #     c = self.coordinate[y][x]
+    #     # print(c.x, c.y)
+    #     if (c.pawn == 1):
+    #       # print(c.x, c.y)
+    #       goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 1]
+    #       # print('Distances')
+    #       # print(goalDistances)
+    #       val -= max(goalDistances) if len(goalDistances) > 0 else 0
+    #       # print(val)
+
+    #     elif (c.pawn == 2):
+    #       goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 2]
+    #       # print('Distances')
+    #       # print(goalDistances)
+    #       val += max(goalDistances) if len(goalDistances) > 0 else 0
+    #       # print(val)
         
     # print("val dari obj func", val)
     if player.color == "RED":
@@ -236,10 +263,18 @@ class Board:
     # Setup initial variables and find moves
     bestmove = None
     if isMax:
+      # print('Max')
       bestval = float("-inf")
       # print(playermax.color)
       possiblemoves = self.getPlayerMoves(playermax)
+      # for move in possiblemoves:
+      #   print('-------------------------')
+      #   print('FROM: ', move['from'].x, ", ", move['from'].y)
+      #   for tos in move['to']:
+      #     print('TO: ', tos.x, ", ", tos.y)
+        
     else:
+      # print('Min')
       bestval = float("inf")
       # print(playermin.color)
       possiblemoves = self.getPlayerMoves(playermin)
@@ -248,6 +283,11 @@ class Board:
     # print(possiblemoves)
     for move in possiblemoves:
       for to in move["to"]:
+
+        # Print Info about pawn's movement
+        # print('----------------------')
+        # print("FROM: ", move['from'].x, ", ", move['from'].y)
+        # print("TO: ", to.x, ", ", to.y)
 
         # Bail out when we're out of time
         if time.time() > timelimit:
@@ -272,7 +312,10 @@ class Board:
         # print("from setelah rekursif", (move["from"].x, move["from"].y))
         # print("to setelah rekursif", (to.x, to.y))
 
-        if max and val > bestval:
+        # print('Val: ', val)
+        # print('bestval: ', bestval)
+
+        if isMax and val > bestval:
           # print("masuk max")
           bestval = val
           bestmove = ((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
@@ -281,7 +324,7 @@ class Board:
           # print("val", val)
           a = max(a, val)
 
-        if not max and val < bestval:
+        if not isMax and val < bestval:
           # print("masuk min")
           bestval = val
           bestmove = ((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))

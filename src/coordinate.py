@@ -1,6 +1,7 @@
 # coordinate.py
 
 # pawn number
+# 0 for empty
 # 1 for green
 # 2 for red
 class Coordinate:
