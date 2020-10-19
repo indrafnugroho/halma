@@ -38,40 +38,43 @@ class Engine:
             #     print(i)
             print("Turn: ", "PLAYER" if self.turn == 1 else "BOT")
 
-            chosen = False
-            while (not(chosen)):
-                pawn = input("Choose your pawn. Write in [x,y] without [] ")
-            
-                if not(re.search("[0-9][,][0-9]", pawn) == None):
-                    fromx, fromy = pawn.split(",")
-                    fromx = int(fromx)
-                    fromy = int(fromy)
-                    if (self.turn == 1):
-                        if (not(self.player.isExist_pawns(fromx, fromy)) and self.turn == 1):
-                            pawns = ''
-                            for i in range (len(self.player.pawns)):
-                                pawns += "(" + str(self.player.pawns[i].x) + "," + str(self.player.pawns[i].y) + ") "
-                            print("Pawn not available! Available pawns : ", pawns)
+            if (self.turn == 2):
+                self.board.executeBotMove()
+            else:
+                chosen = False
+                while (not(chosen)):
+                    pawn = input("Choose your pawn. Write in [x,y] without [] ")
+                
+                    if not(re.search("[0-9][,][0-9]", pawn) == None):
+                        fromx, fromy = pawn.split(",")
+                        fromx = int(fromx)
+                        fromy = int(fromy)
+                        if (self.turn == 1):
+                            if (not(self.player.isExist_pawns(fromx, fromy)) and self.turn == 1):
+                                pawns = ''
+                                for i in range (len(self.player.pawns)):
+                                    pawns += "(" + str(self.player.pawns[i].x) + "," + str(self.player.pawns[i].y) + ") "
+                                print("Pawn not available! Available pawns : ", pawns)
+                            else:
+                                chosen = True
                         else:
-                            chosen = True
-                    else:
-                        if (not(self.bot.isExist_pawns(fromx, fromy))):
-                            pawns = ''
-                            for i in range (len(self.bot.pawns)):
-                                pawns += "(" + str(self.bot.pawns[i].x) + "," + str(self.bot.pawns[i].y) + ") "
-                            print("Pawn not available! Available pawns : ", pawns)
-                        else:
-                            chosen = True
+                            if (not(self.bot.isExist_pawns(fromx, fromy))):
+                                pawns = ''
+                                for i in range (len(self.bot.pawns)):
+                                    pawns += "(" + str(self.bot.pawns[i].x) + "," + str(self.bot.pawns[i].y) + ") "
+                                print("Pawn not available! Available pawns : ", pawns)
+                            else:
+                                chosen = True
 
 
-            print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
+                print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
 
-            to_x, to_y = input("Where do you want to move? Write in [x,y] without [] ").split(",")
-            to_x = int(to_x)
-            to_y = int(to_y)
-            print("Executing moves...")
-            self.board.movePawn((fromy, fromx), (to_y, to_x))
-            print()
+                to_x, to_y = input("Where do you want to move? Write in [x,y] without [] ").split(",")
+                to_x = int(to_x)
+                to_y = int(to_y)
+                print("Executing moves...")
+                self.board.movePawn((fromy, fromx), (to_y, to_x))
+                print()
 
             self.turn = 2 if self.turn == 1 else 1
         
@@ -86,7 +89,7 @@ class Engine:
             result = 2
         else:
             result = 0 #0 for notterminate
-        print("result is ", result)
+        # print("result is ", result)
         return result
 
 if __name__ == "__main__":
