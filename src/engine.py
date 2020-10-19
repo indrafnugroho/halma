@@ -49,32 +49,28 @@ class Engine:
                         fromx, fromy = pawn.split(",")
                         fromx = int(fromx)
                         fromy = int(fromy)
-                        if (self.turn == 1):
-                            if (not(self.player.isExist_pawns(fromx, fromy)) and self.turn == 1):
-                                pawns = ''
-                                for i in range (len(self.player.pawns)):
-                                    pawns += "(" + str(self.player.pawns[i].x) + "," + str(self.player.pawns[i].y) + ") "
-                                print("Pawn not available! Available pawns : ", pawns)
-                            else:
-                                chosen = True
+                        if (not(player.isExist_pawns(fromx, fromy))):
+                            pawns = ''
+                            for i in range (len(player.pawns)):
+                                pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
+                            print("Pawn not available! Available pawns : ", pawns)
                         else:
-                            if (not(self.bot.isExist_pawns(fromx, fromy))):
-                                pawns = ''
-                                for i in range (len(self.bot.pawns)):
-                                    pawns += "(" + str(self.bot.pawns[i].x) + "," + str(self.bot.pawns[i].y) + ") "
-                                print("Pawn not available! Available pawns : ", pawns)
-                            else:
-                                chosen = True
+                            chosen = True
 
 
-                print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
-
-                to_x, to_y = input("Where do you want to move? Write in [x,y] without [] ").split(",")
-                to_x = int(to_x)
-                to_y = int(to_y)
-                print("Executing moves...")
-                self.board.movePawn((fromy, fromx), (to_y, to_x))
-                print()
+                moved = False
+                while not(moved):
+                    print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
+                    to_x, to_y = input("Where do you want to move? Write in [x,y] without [] ").split(",")
+                    to_x = int(to_x)
+                    to_y = int(to_y)
+                    if ((to_x, to_y) in self.board.getMoveFromTile(player, fromx, fromy)):
+                        print("Executing moves...")
+                        self.board.movePawn((fromy, fromx), (to_y, to_x))
+                        print()
+                        moved = True
+                    else:
+                        print("Invalid move!")
 
             self.turn = 2 if self.turn == 1 else 1
         
