@@ -83,8 +83,7 @@ class Player:
   def getPawn(self, row, column):
     i = 0
     found = False
-    while (i < len(self.pawns)):
-      print (self.pawns[i].x, self.pawns[i].y)
+    while i < len(self.pawns) and not(found):
       if (self.pawns[i].x == row and self.pawns[i].y == column):
         pawn = self.pawns[i]
         return pawn

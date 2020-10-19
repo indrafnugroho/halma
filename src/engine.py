@@ -2,6 +2,7 @@ from player import Player
 from board import Board
 import math
 import sys
+import re
 
 class Engine:
     def __init__(self, boardsize, timelimit, player, system):
@@ -28,10 +29,10 @@ class Engine:
             #     print(p.x, p.y)
             # print("player goal")
             # for i in player.goal:
-            #     print(i)
-            print(bot.color)
-            for q in bot.pawns:
-                print(q.x, q.y)
+            # #     print(i)
+            # print(bot.color)
+            # for q in bot.pawns:
+            #     print(q.x, q.y)
             # print("bot goal")
             # for i in bot.goal:
             #     print(i)
@@ -39,26 +40,28 @@ class Engine:
 
             chosen = False
             while (not(chosen)):
-                fromx, fromy = input("Choose your pawn. Write in [x,y] without [] ").split(",")
-                fromx = int(fromx)
-                fromy = int(fromy)
-                if (self.turn == 1):
-                    if (not(self.player.isExist_pawns(fromx, fromy)) and self.turn == 1):
-                        pawns = ''
-                        for i in range (len(self.player.pawns)):
-                            pawns += "(" + str(self.player.pawns[i].x) + "," + str(self.player.pawns[i].y) + ") "
-                        print("Pawn not available! Available pawns : ", pawns)
+                pawn = input("Choose your pawn. Write in [x,y] without [] ")
+            
+                if not(re.search("[0-9][,][0-9]", pawn) == None):
+                    fromx, fromy = pawn.split(",")
+                    fromx = int(fromx)
+                    fromy = int(fromy)
+                    if (self.turn == 1):
+                        if (not(self.player.isExist_pawns(fromx, fromy)) and self.turn == 1):
+                            pawns = ''
+                            for i in range (len(self.player.pawns)):
+                                pawns += "(" + str(self.player.pawns[i].x) + "," + str(self.player.pawns[i].y) + ") "
+                            print("Pawn not available! Available pawns : ", pawns)
+                        else:
+                            chosen = True
                     else:
-                        chosen = True
-                else:
-                    if (not(self.bot.isExist_pawns(fromx, fromy))):
-                        pawns = ''
-                        for i in range (len(self.bot.pawns)):
-                            pawns += "(" + str(self.bot.pawns[i].x) + "," + str(self.bot.pawns[i].y) + ") "
-                        print("Pawn not available! Available pawns : ", pawns)
-                    else:
-                        chosen = True
-
+                        if (not(self.bot.isExist_pawns(fromx, fromy))):
+                            pawns = ''
+                            for i in range (len(self.bot.pawns)):
+                                pawns += "(" + str(self.bot.pawns[i].x) + "," + str(self.bot.pawns[i].y) + ") "
+                            print("Pawn not available! Available pawns : ", pawns)
+                        else:
+                            chosen = True
 
 
             print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))

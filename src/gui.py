@@ -85,7 +85,6 @@ class BoardGUI(tk.Tk):
     def clicked(self, row, column):
         toBeBordered = []
         tile = self.tiles[row -1, column-1]
-        print("tile = ", tile)
         toBeBordered.append(tile)
         border = int(float(self.canvas.itemcget(tile, "width")))
         if border == 0:
@@ -138,7 +137,6 @@ class BoardGUI(tk.Tk):
             pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#CF6E67")
             self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1))
 
-        print("")
         for i in range(len(player2Pawn)):
             col = player2Pawn[i].x - 1
             row = player2Pawn[i].y - 1 
@@ -154,7 +152,7 @@ class BoardGUI(tk.Tk):
         self.update()
 
 
-if __name__ == '__main__':
-    board = Board(8, 100, "GREEN", "GUI")
-    gui = BoardGUI(board)
-    gui.mainloop()
+# if __name__ == '__main__':
+#     board = Board(8, 100, "GREEN", "GUI")
+#     gui = BoardGUI(board)
+#     gui.mainloop()

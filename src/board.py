@@ -181,7 +181,8 @@ class Board:
         self.getJump(availableJump[i], jumps, current_position)
         if (len(jumps) > 0):
           for i in range (len(jumps)):
-            availablePosition.append(jumps[i])
+            if (jumps[i] not in availablePosition):
+              availablePosition.append(jumps[i])
     
     # Cek keluar home atau masuk base
     length = len(availablePosition)
@@ -354,6 +355,6 @@ class Board:
 
 
 
-if __name__ == "__main__":      
-  board = Board(8, 100, "GREEN", "CMD")
-  board.printBoard()
+# if __name__ == "__main__":      
+#   board = Board(8, 100, "GREEN", "CMD")
+#   board.printBoard()
