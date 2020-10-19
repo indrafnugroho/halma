@@ -172,7 +172,6 @@ class Board:
     # available positions
     availablePosition = self.checkAvailablePosition(current_position, 1)
     # print("available positions = ", availablePosition)
-
     availableJump = self.checkAvailablePosition(current_position, 2)
     # print("available jumps = ", availableJump)
 

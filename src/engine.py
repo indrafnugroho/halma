@@ -61,16 +61,19 @@ class Engine:
                 moved = False
                 while not(moved):
                     print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
-                    to_x, to_y = input("Where do you want to move? Write in [x,y] without [] ").split(",")
-                    to_x = int(to_x)
-                    to_y = int(to_y)
-                    if ((to_x, to_y) in self.board.getMoveFromTile(player, fromx, fromy)):
-                        print("Executing moves...")
-                        self.board.movePawn((fromy, fromx), (to_y, to_x))
-                        print()
-                        moved = True
-                    else:
-                        print("Invalid move!")
+                    move = input("Where do you want to move? Write in [x,y] without [] ")
+                    
+                    if (not(re.search("[0-9][,][0-9]", move) == None)):
+                        to_x, to_y = move.split(",")
+                        to_x = int(to_x)
+                        to_y = int(to_y)
+                        if ((to_x, to_y) in self.board.getMoveFromTile(player, fromx, fromy)):
+                            print("Executing moves...")
+                            self.board.movePawn((fromy, fromx), (to_y, to_x))
+                            print()
+                            moved = True
+                        else:
+                            print("Invalid move!")
 
             self.turn = 2 if self.turn == 1 else 1
         
