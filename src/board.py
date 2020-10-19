@@ -3,6 +3,7 @@ from coordinate import Coordinate
 # from gui import BoardGUI
 import math
 import time
+import copy
 
 class Board:
   def __init__(self, boardSize, timeLimit, player, bot):
@@ -14,7 +15,7 @@ class Board:
     self.r_player = bot if bot.color == "RED" else player
     self.turn = "GREEN"
     self.coordinate = [[Coordinate(i, j) for i in range(self.boardSize)] for j in range(self.boardSize)]
-    self.depth = 3
+    self.depth = 2
     # self.system = system
     # if (system == "GUI"):
     #   self.GUI = BoardGUI(self.oa)
@@ -266,8 +267,9 @@ class Board:
       # print('Max')
       bestval = float("-inf")
       # print(playermax.color)
-      possiblemoves = self.getPlayerMoves(playermax)
-      # possiblemoves = self.localSearch(playermax)
+      # possiblemoves = self.getPlayerMoves(playermax)
+      # print("dari minimax")
+      possiblemoves = self.localSearch(playermax)
       # for move in possiblemoves:
       #   print('-------------------------')
       #   print('FROM: ', move['from'].x, ", ", move['from'].y)
@@ -278,8 +280,9 @@ class Board:
       # print('Min')
       bestval = float("inf")
       # print(playermin.color)
-      possiblemoves = self.getPlayerMoves(playermin)
-      # possiblemoves = self.localSearch(playermax)
+      # possiblemoves = self.getPlayerMoves(playermin)
+      # print("dari minimax")
+      possiblemoves = self.localSearch(playermin)
 
     # For each move
     # print(possiblemoves)
@@ -299,7 +302,12 @@ class Board:
         # pawn = move["from"].pawn
         # move["from"].pawn = 0
         # to.pawn = pawn
-        self.movePawn((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
+        # temp = copy.deepcopy(move["from"])
+        # print("minimax before")
+        # print("from", move["from"].x, move["from"].y)
+        # print("to", to.x, to.y)
+        # print("dari minimax")
+        self.tempMovePawn((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
 
         # Recursively call self
         val, _ = self.minimax(depth - 1, playermax, playermin, timelimit, a, b, not isMax)
@@ -307,7 +315,11 @@ class Board:
         # Move the piece back
         # to.pawn = 0
         # move["from"].pawn = pawn
-        self.movePawn((to.y+1, to.x+1), (move["from"].y+1, move["from"].x+1))
+        # print("dari minimax")
+        self.tempMovePawn((to.y+1, to.x+1), (move["from"].y+1, move["from"].x+1))
+        # print("minimax after")
+        # print("from", move["from"].x, move["from"].y)
+        # print("to", to.x, to.y)
 
         # print("val setelah rekursif", val)
         # print("bestval setelah rekursif", bestval)
@@ -348,29 +360,38 @@ class Board:
     for p in player.pawns:
       moves = []
       validactions = self.getAksiValid(p)
-      (x, y) = validactions[0]
-      validactions.remove((x, y))
-      self.movePawn((p.y, p.x), (y, x))
-      bestval = self.objectiveFunc(player)
-      self.movePawn((y, x), (p.y, p.x))
-      moves.append((x, y))
-      for va in validactions:
-        self.movePawn((p.y, p.x), (va[1], va[0]))
-        val = self.objectiveFunc(player)
-        self.movePawn((va[1], va[0]), (p.y, p.x))
-        if (val > bestval):
-          moves.clear()
-          moves.append((va[0], va[1]))
-          bestval = val
-        elif (val == bestval):
-          moves.append((va[0], va[1]))
-      curr_tile = self.coordinate[p.y-1][p.x-1]
-      # print("from", (p.x,p.y))
-      move = {
-        "from": curr_tile,
-        "to": self.getMovesCoord(moves)
-      }
-      possiblemoves.append(move)
+      if (len(validactions) == 0):
+        continue
+      else:
+        temp = copy.deepcopy(p)
+        # print("pawn", p.x, p.y)
+        # print("validactions", validactions)
+        (x, y) = validactions[0]
+        validactions.remove((x, y))
+        # print("dari localsearch")
+        self.tempMovePawn((p.y, p.x), (y, x))
+        bestval = self.objectiveFunc(player)
+        # print("dari localsearch")
+        self.tempMovePawn((y, x), (temp.y, temp.x))
+        # print("pawn", p.x, p.y)
+        moves.append((x, y))
+        for va in validactions:
+          self.tempMovePawn((p.y, p.x), (va[1], va[0]))
+          val = self.objectiveFunc(player)
+          self.tempMovePawn((va[1], va[0]), (temp.y, temp.x))
+          if (val > bestval):
+            moves.clear()
+            moves.append((va[0], va[1]))
+            bestval = val
+          elif (val == bestval):
+            moves.append((va[0], va[1]))
+        curr_tile = self.coordinate[p.y-1][p.x-1]
+        # print("from", (p.x,p.y))
+        move = {
+          "from": curr_tile,
+          "to": self.getMovesCoord(moves)
+        }
+        possiblemoves.append(move)
     return possiblemoves
           
   def getPlayerMoves(self, player):
@@ -400,14 +421,32 @@ class Board:
     to_tile = self.coordinate[to_coord[0]-1][to_coord[1]-1]
     # Handle trying to move a non-existant piece and moving into a piece
     if from_tile.pawn == 0 or to_tile.pawn != 0:
-      print("Invalid move")
+      print("Invalid move pawn!")
       return
 
     # Move piece
     if from_tile.pawn == 1:
       self.g_player.movePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
-    else:
+    elif from_tile.pawn == 2:
       self.r_player.movePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
+    else:
+      print("Invalid move pawn!")
+      return
+    to_tile.pawn = from_tile.pawn
+    from_tile.pawn = 0
+
+  def tempMovePawn(self, from_coord, to_coord):
+    from_tile = self.coordinate[from_coord[0]-1][from_coord[1]-1]
+    to_tile = self.coordinate[to_coord[0]-1][to_coord[1]-1]
+    
+    # Move piece
+    if from_tile.pawn == 1:
+      self.g_player.movePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
+    elif from_tile.pawn == 2:
+      self.r_player.movePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
+    else:
+      print("invalid temp move pawn")
+      return
     to_tile.pawn = from_tile.pawn
     from_tile.pawn = 0
 
@@ -438,9 +477,13 @@ class Board:
 
     # Move the resulting piece
     # self.outline_tiles(None)  # Reset outlines
-    move_from = move[0]
-    move_to = move[1]
-    self.movePawn(move_from, move_to)
+    if move is None:
+      print("Status: no action taken")
+    else:
+      move_from = move[0]
+      move_to = move[1]
+      self.movePawn(move_from, move_to)
+      print("Status: Pawn", move_from, "moved to", move_to)
 
     # self.board_view.draw_tiles(board=self.board)  # Refresh the board
 
