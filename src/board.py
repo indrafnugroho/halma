@@ -351,6 +351,10 @@ class Board:
     p = player.getPawn(x, y)
     return self.getAksiValid(p)
 
+# board = Board(8, 100, "GREEN", "CMD")
+
+
+
 if __name__ == "__main__":      
   board = Board(8, 100, "GREEN", "CMD")
   board.printBoard()
