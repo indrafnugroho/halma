@@ -22,9 +22,9 @@ class Player:
       for j in range(1, maxIter):
         if (i + j <= maxIter and i < maxIter and j < maxIter):
           # print ("i = " + str(i) + " j = " + str(j))
-          self.pawns.append(Pion(boardSize - i + 1, boardSize - j + 1))
-          self.home.append((boardSize - i + 1, boardSize - j + 1))
-          self.goal.append((i, j))
+          self.pawns.append(Pion(boardSize - j + 1, boardSize - i + 1))
+          self.home.append((boardSize - j + 1, boardSize - i + 1))
+          self.goal.append((j, i))
 
     if self.color == 'RED':
       # If an opposing player
