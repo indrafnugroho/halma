@@ -22,16 +22,16 @@ class Engine:
         while (True):
             self.board.printBoard()
             player = self.player if self.turn == 1 else self.bot
-            # print(player.color)
+            print(player.color)
             bot = self.bot if self.turn == 1 else self.player
-            # for p in player.pawns:
-            #     print(p.x, p.y)
+            for p in player.pawns:
+                print(p.x, p.y)
             # print("player goal")
             # for i in player.goal:
             #     print(i)
-            # print(bot.color)
-            # for q in bot.pawns:
-            #     print(q.x, q.y)
+            print(bot.color)
+            for q in bot.pawns:
+                print(q.x, q.y)
             # print("bot goal")
             # for i in bot.goal:
             #     print(i)
@@ -45,7 +45,7 @@ class Engine:
             to_x = int(to_x)
             to_y = int(to_y)
             print("Executing moves...")
-            self.board.movePawn((fromx, fromy), (to_x, to_y))
+            self.board.movePawn((fromy, fromx), (to_y, to_x))
             print()
 
             self.turn = 2 if self.turn == 1 else 1
