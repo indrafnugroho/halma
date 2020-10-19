@@ -6,57 +6,73 @@ import re
 
 class Engine:
     def __init__(self, boardsize, timelimit, player, system):
-        self.bot = Player("RED" if player=="GREEN" else "GREEN", boardsize)
-        self.player = Player(player, boardsize)
-        # elif (player == "RED"):
-        #     self.bot = Player("GREEN", boardsize)
-        #     self.player = Player("RED", boardsize)
-        # else:
-        #     self.bot = Player("RED", boardsize)
-        #     self.player = Player("GREEN", boardsize)
-        #     self.selfplay = True
+        if (player is not None):
+            self.bot = Player("RED" if player=="GREEN" else "GREEN", boardsize)
+            self.player = Player(player, boardsize)
+            self.selfplay = False
+        else:
+            self.player = Player("RED", boardsize)
+            self.bot = Player("GREEN", boardsize)
+            self.selfplay = True
         
         self.board = Board(boardsize, timelimit, self.player, self.bot)
         self.turn = 1 #1 for player, 2 for bot
+        # if (system == "GUI"):
+            # set gui here
     
     def start(self):
-        while (self.terminate_state() == 0):
-            self.board.printBoard()
-            player = self.player if self.turn == 1 else self.bot
-            # print(player.color)
-            bot = self.bot if self.turn == 1 else self.player
-            # for p in player.pawns:
-            #     print(p.x, p.y)
-            # print("player goal")
-            # for i in player.goal:
-            # #     print(i)
-            # print(bot.color)
-            # for q in bot.pawns:
-            #     print(q.x, q.y)
-            # print("bot goal")
-            # for i in bot.goal:
-            #     print(i)
-            print("Turn: ", "PLAYER" if self.turn == 1 else "BOT")
+        if (self.selfplay == True):
+            while (self.terminate_state() == 0):
+                self.board.printBoard()
+                print("Turn: ", "PLAYER" if self.turn == 1 else "BOT")
 
-            if (self.turn == 2):
-                self.board.executeBotMove()
-            else:
-                chosen = False
-                while (not(chosen)):
-                    pawn = input("Choose your pawn. Write in [x,y] without [] ")
+                if (self.turn == 2):
+                    self.board.executeBotMove()
+                else:
+                    self.board.player = self.bot
+                    self.board.bot = self.player
+                    self.board.executeBotMove()
+                    self.board.player = self.player
+                    self.board.bot = self.bot
                 
-                    if not(re.search("[0-9][,][0-9]", pawn) == None):
-                        fromx, fromy = pawn.split(",")
-                        fromx = int(fromx)
-                        fromy = int(fromy)
-                        if (not(player.isExist_pawns(fromx, fromy))):
-                            pawns = ''
-                            for i in range (len(player.pawns)):
-                                pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
-                            print("Pawn not available! Available pawns : ", pawns)
-                        else:
-                            chosen = True
+                self.turn = 2 if self.turn == 1 else 1
+        else:
+            while (self.terminate_state() == 0):
+                self.board.printBoard()
+                player = self.player if self.turn == 1 else self.bot
+                # print(player.color)
+                bot = self.bot if self.turn == 1 else self.player
+                # for p in player.pawns:
+                #     print(p.x, p.y)
+                # print("player goal")
+                # for i in player.goal:
+                # #     print(i)
+                # print(bot.color)
+                # for q in bot.pawns:
+                #     print(q.x, q.y)
+                # print("bot goal")
+                # for i in bot.goal:
+                #     print(i)
+                print("Turn: ", "PLAYER" if self.turn == 1 else "BOT")
 
+                if (self.turn == 2):
+                    self.board.executeBotMove()
+                else:
+                    chosen = False
+                    while (not(chosen)):
+                        pawn = input("Choose your pawn. Write in [x,y] without [] ")
+                    
+                        if not(re.search("[0-9][,][0-9]", pawn) == None):
+                            fromx, fromy = pawn.split(",")
+                            fromx = int(fromx)
+                            fromy = int(fromy)
+                            if (not(player.isExist_pawns(fromx, fromy))):
+                                pawns = ''
+                                for i in range (len(player.pawns)):
+                                    pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
+                                print("Pawn not available! Available pawns : ", pawns)
+                            else:
+                                chosen = True
 
                 moved = False
                 while not(moved):
@@ -75,7 +91,7 @@ class Engine:
                         else:
                             print("Invalid move!")
 
-            self.turn = 2 if self.turn == 1 else 1
+                self.turn = 2 if self.turn == 1 else 1
         
         won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
         print(won_player + " wins the game!")
@@ -95,9 +111,9 @@ if __name__ == "__main__":
     if len(sys.argv) < 4:
         print("usage: python engine.py <boardsize> <timelimit> <gamesystem> [player]")
         print("boardsize: 8, 10, 16")
-        print("(timelimt: any number in second)")
-        print("player: RED/GREEN")
+        print("timelimit: any number in second")
         print("gamesystem: CMD/GUI")
+        print("player: RED/GREEN")
         exit()
 
     boardsize, timelimit, system = sys.argv[1:4]
@@ -120,10 +136,9 @@ if __name__ == "__main__":
     
     if player is not None:
         player = player.upper()
-
-    if player not in ["RED", "GREEN"]:
-        print("player should be RED/GREEN")
-        exit()
+        if player not in ["RED", "GREEN"]:
+            print("player should be RED/GREEN")
+            exit()
             
     game = Engine(boardsize, timelimit, player, system)
     game.start()

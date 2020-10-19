@@ -99,7 +99,7 @@ class Player:
           p.IsArrived = True
         p.x = x2
         p.y = y2
-        # self.pawns.sort()
+        self.pawns = sorted(self.pawns, key=lambda p: (p.x, p.y))
         break
         
 
