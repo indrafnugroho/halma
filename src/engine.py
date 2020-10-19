@@ -70,7 +70,13 @@ class Engine:
                                 pawns = ''
                                 for i in range (len(player.pawns)):
                                     pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
-                                print("Pawn not available! Available pawns : ", pawns)
+                                print("Pawn not available in current coordinate! Available pawns :", pawns)
+                            elif (len(self.board.getMoveFromTile(player, fromx, fromy)) == 0):
+                                pawns = ''
+                                for i in range (len(player.pawns)):
+                                    if (player.pawns[i].x != fromx and player.pawns[i].y != fromy):
+                                        pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
+                                print("No move available, please choose other pawn! Available pawns :", pawns)
                             else:
                                 chosen = True
 
