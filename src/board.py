@@ -14,7 +14,7 @@ class Board:
     self.r_player = bot if bot.color == "RED" else player
     self.turn = "GREEN"
     self.coordinate = [[Coordinate(i, j) for i in range(self.boardSize)] for j in range(self.boardSize)]
-    self.depth = 3
+    self.depth = 1
     # self.system = system
     # if (system == "GUI"):
     #   self.GUI = BoardGUI(self.oa)
@@ -257,6 +257,7 @@ class Board:
         # pawn = move["from"].pawn
         # move["from"].pawn = 0
         # to.pawn = pawn
+        self.movePawn((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
 
         # Recursively call self
         val, _ = self.minimax(depth - 1, playermax, playermin, timelimit, a, b, not isMax)
@@ -264,6 +265,7 @@ class Board:
         # Move the piece back
         # to.pawn = 0
         # move["from"].pawn = pawn
+        self.movePawn((to.y+1, to.x+1), (move["from"].y+1, move["from"].x+1))
 
         # print("val setelah rekursif", val)
         # print("bestval setelah rekursif", bestval)
