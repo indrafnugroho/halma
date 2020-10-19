@@ -23,7 +23,7 @@ class Engine:
             self.board.printBoard()
             player = self.player if self.turn == 1 else self.bot
             # print(player.color)
-            bot = self.bot if self.turn == 1 else self.player
+            bot = self.bot if self.turn == 2 else self.player
             # for p in player.pawns:
             #     print(p.x, p.y)
             # print("player goal")
@@ -36,12 +36,34 @@ class Engine:
             # for i in bot.goal:
             #     print(i)
             print("Turn: ", "PLAYER" if self.turn == 1 else "BOT")
-            fromx, fromy = input("Choose your pawn. Write in [x,y] without []").split(",")
-            fromx = int(fromx)
-            fromy = int(fromy)
-            # print(fromx, fromy)
+
+            chosen = False
+            while (not(chosen)):
+                fromx, fromy = input("Choose your pawn. Write in [x,y] without [] ").split(",")
+                fromx = int(fromx)
+                fromy = int(fromy)
+                if (self.turn == 1):
+                    if (not(self.player.isExist_pawns(fromx, fromy)) and self.turn == 1):
+                        pawns = ''
+                        for i in range (len(self.player.pawns)):
+                            pawns += "(" + str(self.player.pawns[i].x) + "," + str(self.player.pawns[i].y) + ") "
+                        print("Pawn not available! Available pawns : ", pawns)
+                    else:
+                        chosen = True
+                else:
+                    if (not(self.bot.isExist_pawns(fromx, fromy))):
+                        pawns = ''
+                        for i in range (len(self.bot.pawns)):
+                            pawns += "(" + str(self.bot.pawns[i].x) + "," + str(self.bot.pawns[i].y) + ") "
+                        print("Pawn not available! Available pawns : ", pawns)
+                    else:
+                        chosen = True
+
+
+
             print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
-            to_x, to_y = input("Where do you want to move? Write in [x,y] without []").split(",")
+
+            to_x, to_y = input("Where do you want to move? Write in [x,y] without [] ").split(",")
             to_x = int(to_x)
             to_y = int(to_y)
             print("Executing moves...")
