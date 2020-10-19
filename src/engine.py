@@ -19,7 +19,7 @@ class Engine:
         self.turn = 1 #1 for player, 2 for bot
     
     def start(self):
-        while (True):
+        while (self.terminate_state() == 0):
             self.board.printBoard()
             player = self.player if self.turn == 1 else self.bot
             print(player.color)
@@ -50,26 +50,19 @@ class Engine:
 
             self.turn = 2 if self.turn == 1 else 1
         
-        # won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
-        # print(won_player + " wins the game!")
+        won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
+        print(won_player + " wins the game!")
     
-    def terminate_state(self,player):
-        self.player1 = self.board.player1
-        self.player2 = self.board.player2
-        if(self.player1.isTerminate() and not(self.player2.isTerminate())):
+    def terminate_state(self):
+        result = None
+        if(self.player.isTerminate() and not(self.bot.isTerminate())):
             result = 1
-        elif(self.player2.isTerminate() and not(self.player1.isTerminate())):
-            result = -1
+        elif(self.bot.isTerminate() and not(self.player.isTerminate())):
+            result = 2
         else:
             result = 0 #0 for notterminate
-        #for player2
-        if(player == 2):
-            result *= -1
+        print("result is ", result)
         return result
-
-# e = Engine(16,50, "GREEN", "CMD")
-# # e.terminate_state(1)
-# print(e.terminate_state(2))
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
