@@ -74,11 +74,13 @@ class Engine:
                             else:
                                 chosen = True
 
-
-                    moved = False
-                    while not(moved):
-                        print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
-                        to_x, to_y = input("Where do you want to move? Write in [x,y] without [] ").split(",")
+                moved = False
+                while not(moved):
+                    print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
+                    move = input("Where do you want to move? Write in [x,y] without [] ")
+                    
+                    if (not(re.search("[0-9][,][0-9]", move) == None)):
+                        to_x, to_y = move.split(",")
                         to_x = int(to_x)
                         to_y = int(to_y)
                         if ((to_x, to_y) in self.board.getMoveFromTile(player, fromx, fromy)):
