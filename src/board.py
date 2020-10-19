@@ -237,12 +237,15 @@ class Board:
     bestmove = None
     if isMax:
       bestval = float("-inf")
+      # print(playermax.color)
       possiblemoves = self.getPlayerMoves(playermax)
     else:
       bestval = float("inf")
+      # print(playermin.color)
       possiblemoves = self.getPlayerMoves(playermin)
 
     # For each move
+    # print(possiblemoves)
     for move in possiblemoves:
       for to in move["to"]:
 
@@ -251,40 +254,52 @@ class Board:
           return bestval, bestmove
 
         # Move piece to the move outlined
-        pawn = move["from"].pawn
-        move["from"].pawn = 0
-        to.pawn = pawn
+        # pawn = move["from"].pawn
+        # move["from"].pawn = 0
+        # to.pawn = pawn
 
         # Recursively call self
         val, _ = self.minimax(depth - 1, playermax, playermin, timelimit, a, b, not isMax)
 
         # Move the piece back
-        to.pawn = 0
-        move["from"].pawn = pawn
+        # to.pawn = 0
+        # move["from"].pawn = pawn
+
+        # print("val setelah rekursif", val)
+        # print("bestval setelah rekursif", bestval)
+        # print("from setelah rekursif", (move["from"].x, move["from"].y))
+        # print("to setelah rekursif", (to.x, to.y))
 
         if max and val > bestval:
+          # print("masuk max")
           bestval = val
-          bestmove = ((move["from"].y, move["from"].x), (to.y, to.x))
-          print("a", a)
-          print("val", val)
+          bestmove = ((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
+          # print("bestmove", bestmove)
+          # print("a", a)
+          # print("val", val)
           a = max(a, val)
 
         if not max and val < bestval:
+          # print("masuk min")
           bestval = val
-          bestmove = ((move["from"].y, move["from"].x), (to.y, to.x))
-          print("b", b)
-          print("val", val)
+          bestmove = ((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
+          # print("bestmove", bestmove)
+          # print("b", b)
+          # print("val", val)
           b = min(b, val)
 
         if b <= a:
+          # print("bestmove", bestmove)
           return bestval, bestmove
-
+    
+    # print("bestmove", bestmove)
     return bestval, bestmove
 
   def getPlayerMoves(self, player):
     moves = []  # All possible moves
     for p in player.pawns:
       curr_tile = self.coordinate[p.y-1][p.x-1]
+      # print("from", (p.x,p.y))
       move = {
         "from": curr_tile,
         "to": self.getMovesCoord(self.getAksiValid(p))
@@ -294,9 +309,11 @@ class Board:
 
   def getMovesCoord(self, validactions):
     moves = []
+    # print("to", validactions)
     for l in validactions:
-      # print(l)
+      # print("l", l)
       el = self.coordinate[l[1]-1][l[0]-1]
+      # print("el", el.x, el.y)
       moves.append(el)
     return moves
 
