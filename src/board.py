@@ -267,6 +267,7 @@ class Board:
       bestval = float("-inf")
       # print(playermax.color)
       possiblemoves = self.getPlayerMoves(playermax)
+      # possiblemoves = self.localSearch(playermax)
       # for move in possiblemoves:
       #   print('-------------------------')
       #   print('FROM: ', move['from'].x, ", ", move['from'].y)
@@ -278,6 +279,7 @@ class Board:
       bestval = float("inf")
       # print(playermin.color)
       possiblemoves = self.getPlayerMoves(playermin)
+      # possiblemoves = self.localSearch(playermax)
 
     # For each move
     # print(possiblemoves)
@@ -309,8 +311,9 @@ class Board:
 
         # print("val setelah rekursif", val)
         # print("bestval setelah rekursif", bestval)
-        # print("from setelah rekursif", (move["from"].x, move["from"].y))
-        # print("to setelah rekursif", (to.x, to.y))
+        # print("from setelah rekursif", (move["from"].x+1, move["from"].y+1))
+        # print("to setelah rekursif", (to.x+1, to.y+1))
+        # print("----------------------")
 
         # print('Val: ', val)
         # print('bestval: ', bestval)
@@ -340,6 +343,36 @@ class Board:
     # print("bestmove", bestmove)
     return bestval, bestmove
 
+  def localSearch(self, player):
+    possiblemoves = []
+    for p in player.pawns:
+      moves = []
+      validactions = self.getAksiValid(p)
+      (x, y) = validactions[0]
+      validactions.remove((x, y))
+      self.movePawn((p.y, p.x), (y, x))
+      bestval = self.objectiveFunc(player)
+      self.movePawn((y, x), (p.y, p.x))
+      moves.append((x, y))
+      for va in validactions:
+        self.movePawn((p.y, p.x), (va[1], va[0]))
+        val = self.objectiveFunc(player)
+        self.movePawn((va[1], va[0]), (p.y, p.x))
+        if (val > bestval):
+          moves.clear()
+          moves.append((va[0], va[1]))
+          bestval = val
+        elif (val == bestval):
+          moves.append((va[0], va[1]))
+      curr_tile = self.coordinate[p.y-1][p.x-1]
+      # print("from", (p.x,p.y))
+      move = {
+        "from": curr_tile,
+        "to": self.getMovesCoord(moves)
+      }
+      possiblemoves.append(move)
+    return possiblemoves
+          
   def getPlayerMoves(self, player):
     moves = []  # All possible moves
     for p in player.pawns:
