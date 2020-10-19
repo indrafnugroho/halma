@@ -44,12 +44,9 @@ class Player:
   
   #all pawn in oponent base
   def isTerminate(self):
-    goal = self.goal
-    pawns = self.pawns
     status = True
-    for i in range(len(pawns)):
-        pion = (pawns[i].x, pawns[i].y)
-        if pion in goal:
+    for p in self.pawns:
+        if (p.x, p.y) in self.goal:
             status = True
         else:
             status = False
