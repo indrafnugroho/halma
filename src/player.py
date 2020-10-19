@@ -1,10 +1,11 @@
+import copy
 
 class Player:
   def __init__(self, color, boardSize):
     self.color = color
     self.makeRegionPawns(boardSize)
-    self.home = []
-    self.goal = []
+    self.homeCoord = []
+    self.goalCoord = []
     
   def makeRegionPawns(self, boardSize):
     self.pawns = []
@@ -20,17 +21,17 @@ class Player:
     for i in range(1, maxIter):
       for j in range(1, maxIter):
         if (i + j <= maxIter and i < maxIter and j < maxIter):
-          print ("i = " + str(i) + " j = " + str(j))
-          self.pawns.append(Pion(i, j))
-          self.home.append((i, j))
-          self.goal.append((boardSize - i + 1, boardSize - j + 1))
+          # print ("i = " + str(i) + " j = " + str(j))
+          self.pawns.append(Pion(boardSize - i + 1, boardSize - j + 1))
+          self.home.append((boardSize - i + 1, boardSize - j + 1))
+          self.goal.append((i, j))
 
     if self.color == 'RED':
       # If an opposing player
-      temp = self.home.copy()
-      self.home = self.goal.copy()
+      temp = copy.deepcopy(self.home)
+      self.home = copy.deepcopy(self.goal)
       self.goal = temp
-      for i in range(0, len(self.home)):
+      for i in range(len(self.pawns)):
         self.pawns[i].x = self.home[i][0]
         self.pawns[i].y = self.home[i][1]
               
@@ -91,7 +92,19 @@ class Player:
       else:
         i +=1
 
-
+  def movePawn(self, from_tile, to_tile):
+    (x, y) = from_tile
+    (x2, y2) = to_tile
+    for p in self.pawns:
+      if p.x == x and p.y == y:
+        if (x, y) in self.home and (x2, y2) not in self.home:
+          p.IsDeparted = True
+        elif (x, y) not in self.goal and (x2, y2) in self.goal:
+          p.IsArrived = True
+        p.x = x2
+        p.y = y2
+        # self.pawns.sort()
+        break
         
 
 # 8, 10, 16

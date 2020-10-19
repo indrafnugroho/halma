@@ -5,33 +5,53 @@ import sys
 
 class Engine:
     def __init__(self, boardsize, timelimit, player, system):
-        # if (player == "GREEN"):
-        #     bot = "RED"
+        self.bot = Player("RED" if player=="GREEN" else "GREEN", boardsize)
+        self.player = Player(player, boardsize)
         # elif (player == "RED"):
-        #     bot = "GREEN"
+        #     self.bot = Player("GREEN", boardsize)
+        #     self.player = Player("RED", boardsize)
         # else:
-        #     player = "GREEN"
-        #     bot = "RED"
+        #     self.bot = Player("RED", boardsize)
+        #     self.player = Player("GREEN", boardsize)
         #     self.selfplay = True
         
-        self.board = Board(boardsize,timelimit, player, system)
+        self.board = Board(boardsize, timelimit, self.player, self.bot)
+        self.turn = 1 #1 for player, 2 for bot
     
-    # def start(self):
-    #     while (self.terminate_state() == 0):
-    #         self.board.printBoard()
-    #         print("Turn: ", turn)
-    #         print("Available moves: ", available_moves)
-    #         to_x, to_y = input("Where do you want to move? Write in [x,y] without []")
-    #         to_x = int(to_x)
-    #         to_y = int(to_y)
-    #         print("Executing moves...")
-    #         execute_moves()
-    #         print()
+    def start(self):
+        while (True):
+            self.board.printBoard()
+            player = self.player if self.turn == 1 else self.bot
+            # print(player.color)
+            bot = self.bot if self.turn == 1 else self.player
+            # for p in player.pawns:
+            #     print(p.x, p.y)
+            # print("player goal")
+            # for i in player.goal:
+            #     print(i)
+            # print(bot.color)
+            # for q in bot.pawns:
+            #     print(q.x, q.y)
+            # print("bot goal")
+            # for i in bot.goal:
+            #     print(i)
+            print("Turn: ", "PLAYER" if self.turn == 1 else "BOT")
+            fromx, fromy = input("Choose your pawn. Write in [x,y] without []").split(",")
+            fromx = int(fromx)
+            fromy = int(fromy)
+            # print(fromx, fromy)
+            print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
+            to_x, to_y = input("Where do you want to move? Write in [x,y] without []").split(",")
+            to_x = int(to_x)
+            to_y = int(to_y)
+            print("Executing moves...")
+            self.board.movePawn((fromx, fromy), (to_x, to_y))
+            print()
 
-    #         turn = "RED" if self.turn == "GREEN" else "RED"
+            self.turn = 2 if self.turn == 1 else 1
         
-    #     won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
-    #     print(won_player + " wins the game!")
+        # won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
+        # print(won_player + " wins the game!")
     
     def terminate_state(self,player):
         self.player1 = self.board.player1
@@ -83,3 +103,4 @@ if __name__ == "__main__":
             exit()
             
     game = Engine(boardsize, timelimit, player, system)
+    game.start()

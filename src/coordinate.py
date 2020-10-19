@@ -1,5 +1,8 @@
 # coordinate.py
 
+# pawn number
+# 1 for green
+# 2 for red
 class Coordinate:
     def __init__(self, x, y, color="BLACK", pawn=0):
         self.x = x
