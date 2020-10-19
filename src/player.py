@@ -40,7 +40,7 @@ class Player:
     print('Color: '+ self.color)
     print('Position of pawns:')
     for pawn in self.pawns:
-      print('({x}, {y})'.format(x=pawn.x, y=pawn.y))
+      print('({x}, {y}), IsArrived={IsArrived}, IsDeparted={IsDeparted}'.format(x=pawn.x, y=pawn.y, IsArrived=pawn.IsArrived, IsDeparted=pawn.IsDeparted))
   
   #all pawn in oponent base
   def isTerminate(self):
@@ -88,6 +88,16 @@ class Player:
       else:
         i +=1
 
+  def tempMovePawn(self, from_tile, to_tile):
+    (x, y) = from_tile
+    (x2, y2) = to_tile
+    for p in self.pawns:
+      if p.x == x and p.y == y:
+        p.x = x2
+        p.y = y2
+        self.pawns = sorted(self.pawns, key=lambda p: (p.x, p.y))
+        break
+
   def movePawn(self, from_tile, to_tile):
     (x, y) = from_tile
     (x2, y2) = to_tile
@@ -101,6 +111,7 @@ class Player:
         p.y = y2
         self.pawns = sorted(self.pawns, key=lambda p: (p.x, p.y))
         break
+    # self.printStatus()
         
 
 # 8, 10, 16

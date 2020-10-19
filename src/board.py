@@ -215,40 +215,40 @@ class Board:
 
     ## Ini yang belom di ubah2
 
-    for x in range(self.boardSize):
-      for y in range(self.boardSize):
-        c = self.coordinate[y][x]
-        # print(c.x, c.y)
-        if (c.pawn == 1):
-          goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in player.goalCoord if g.pawn != 1]
-          val -= max(goalDistances) if len(goalDistances) > 0 else -50
-
-        elif (c.pawn == 2):
-          goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in player.goalCoord if g.pawn != 2]
-          val += max(goalDistances) if len(goalDistances) > 0 else -50
-    
-    
-    ## Ini dari Nanda nyoba ganti2, belom fix nanti mau diomongin dulu wkwk ##
-
-
     # for x in range(self.boardSize):
     #   for y in range(self.boardSize):
     #     c = self.coordinate[y][x]
     #     # print(c.x, c.y)
     #     if (c.pawn == 1):
-    #       # print(c.x, c.y)
-    #       goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 1]
-    #       # print('Distances')
-    #       # print(goalDistances)
-    #       val -= max(goalDistances) if len(goalDistances) > 0 else 0
-    #       # print(val)
+    #       goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in player.goalCoord if g.pawn != 1]
+    #       val -= max(goalDistances) if len(goalDistances) > 0 else -50
 
     #     elif (c.pawn == 2):
-    #       goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 2]
-    #       # print('Distances')
-    #       # print(goalDistances)
-    #       val += max(goalDistances) if len(goalDistances) > 0 else 0
-    #       # print(val)
+    #       goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in player.goalCoord if g.pawn != 2]
+    #       val += max(goalDistances) if len(goalDistances) > 0 else -50
+    
+    
+    ## Ini dari Nanda nyoba ganti2, belom fix nanti mau diomongin dulu wkwk ##
+
+
+    for x in range(self.boardSize):
+      for y in range(self.boardSize):
+        c = self.coordinate[y][x]
+        # print(c.x, c.y)
+        if (c.pawn == 1):
+          # print(c.x, c.y)
+          goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 1]
+          # print('Distances')
+          # print(goalDistances)
+          val -= max(goalDistances) if len(goalDistances) > 0 else 0
+          # print(val)
+
+        elif (c.pawn == 2):
+          goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 2]
+          # print('Distances')
+          # print(goalDistances)
+          val += max(goalDistances) if len(goalDistances) > 0 else 0
+          # print(val)
         
     # print("val dari obj func", val)
     if player.color == "RED":
@@ -266,9 +266,9 @@ class Board:
       # print('Max')
       bestval = float("-inf")
       # print(playermax.color)
-      # possiblemoves = self.getPlayerMoves(playermax)
+      possiblemoves = self.getPlayerMoves(playermax)
       # print("dari minimax")
-      possiblemoves = self.localSearch(playermax)
+      # possiblemoves = self.localSearch(playermax)
       # for move in possiblemoves:
       #   print('-------------------------')
       #   print('FROM: ', move['from'].x, ", ", move['from'].y)
@@ -279,9 +279,9 @@ class Board:
       # print('Min')
       bestval = float("inf")
       # print(playermin.color)
-      # possiblemoves = self.getPlayerMoves(playermin)
+      possiblemoves = self.getPlayerMoves(playermin)
       # print("dari minimax")
-      possiblemoves = self.localSearch(playermin)
+      # possiblemoves = self.localSearch(playermin)
 
     # For each move
     # print(possiblemoves)
@@ -440,9 +440,9 @@ class Board:
     
     # Move piece
     if from_tile.pawn == 1:
-      self.g_player.movePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
+      self.g_player.tempMovePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
     elif from_tile.pawn == 2:
-      self.r_player.movePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
+      self.r_player.tempMovePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
     else:
       print("invalid temp move pawn")
       return
