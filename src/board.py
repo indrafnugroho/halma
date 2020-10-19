@@ -88,13 +88,13 @@ class Board:
 
     if (delta == 1):
       availablePosition.append((x+1, y))
-      availablePosition.append((x-1, y))
-      availablePosition.append((x, y+1))
-      availablePosition.append((x, y-1))
       availablePosition.append((x+1, y+1))
-      availablePosition.append((x+1, y-1))
-      availablePosition.append((x-1, y-1))
+      availablePosition.append((x, y+1))
       availablePosition.append((x-1, y+1))
+      availablePosition.append((x-1, y))
+      availablePosition.append((x-1, y-1))
+      availablePosition.append((x, y-1))
+      availablePosition.append((x+1, y-1))
     else:
       if (not(self.isEmpty(x+1,y)) and (self.isEmpty(x+2, y))):
         availablePosition.append((x+2, y))
@@ -141,7 +141,7 @@ class Board:
 
   def getJump(self, position, jumps, last_position):
     availableJumps = self.checkAvailablePosition(position, 2)
-    print("available jumps = ", availableJumps)
+    print("available jumps recursive = ", availableJumps)
     print("last position = ", last_position)
 
     try:
@@ -153,7 +153,7 @@ class Board:
       return jumps
     else:
       for i in range (len(availableJumps)):
-        jumps += availableJumps[i]
+        jumps.append(availableJumps[i])
         self.getJump(availableJumps[i], jumps, position)
         
   def getAksiValid(self, pawn):
@@ -173,16 +173,16 @@ class Board:
     availableJump = self.checkAvailablePosition(current_position, 2)
     print("available jumps = ", availablePosition)
 
-    print("available position before start recursive = ", availablePosition)
     if (len(availableJump) > 0):
       for i in range (len(availableJump)):
         availablePosition.append(availableJump[i])
-        ("current jump position = ", availableJump[i])
+        print ("current jump position = ", availableJump[i])
         jumps = []
         self.getJump(availableJump[i], jumps, current_position)
         if (len(jumps) > 0):
           for i in range (len(jumps)):
-            availablePosition.append(jumps[i])
+            if (jumps[i] not in availablePosition):
+              availablePosition.append(jumps[i])
     
     # Cek keluar home atau masuk base
     length = len(availablePosition)
@@ -355,6 +355,6 @@ class Board:
 
 
 
-if __name__ == "__main__":      
-  board = Board(8, 100, "GREEN", "CMD")
-  board.printBoard()
+# if __name__ == "__main__":      
+#   board = Board(8, 100, "GREEN", "CMD")
+#   board.printBoard()
