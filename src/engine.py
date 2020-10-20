@@ -5,6 +5,7 @@ import tkinter as tk
 import math
 import sys
 import re
+import time
 from multiprocessing import Process
 
 class Engine:
@@ -32,6 +33,7 @@ class Engine:
         if (self.selfplay == True):
             if (self.system == "CMD"):
                 # BOT VS BOT CMD MODE
+                start = time.time()
                 while (self.terminate_state() == 0):
                     self.board.printBoard()
                     print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
@@ -50,8 +52,11 @@ class Engine:
                     
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
+                end = time.time()
+                print("Execution time:", end - start)
             else:
                 # BOT VS BOT GUI MODE
+                start = time.time()
                 self.gui = BoardGUI(self.board)
                 # self.gui.mainloop()
                 while (self.terminate_state() == 0):
@@ -62,10 +67,13 @@ class Engine:
                         self.board.executeBotMove()
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
+                end = time.time()
+                print("Execution time:", end - start)
                 
         else:
             # BOT VS USER GUI MODE
             if (self.system == "CMD"):
+                start = time.time()
                 while (self.terminate_state() == 0):
                     self.board.printBoard()
                     player = self.player1 if self.turn == 1 else self.player2
@@ -124,8 +132,11 @@ class Engine:
                                         print("Invalid move!")
 
                     self.turn = 2 if self.turn == 1 else 1
+                end = time.time()
+                print("Execution time:", end - start)
             else:
                 # BOT VS USER GUI MODE
+                start = time.time()
                 self.gui = BoardGUI(self.board)
                 # self.gui.mainloop()
                 self.gui.move = True
@@ -139,6 +150,8 @@ class Engine:
                         # self.gui.move = False
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
+                end = time.time()
+                print("Execution time:", end - start)
                     
 
         won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"

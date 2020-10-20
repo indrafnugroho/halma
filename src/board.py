@@ -15,7 +15,7 @@ class Board:
     self.r_player = p2 if p2.color == "RED" else p1
     self.turn = 1
     self.coordinate = [[Coordinate(i, j) for i in range(self.boardSize)] for j in range(self.boardSize)]
-    self.depth = 3
+    self.depth = 2
     self.selfplay = selfplay
     self.bot = bot
     
@@ -216,17 +216,21 @@ class Board:
     for x in range(self.boardSize):
       for y in range(self.boardSize):
         c = self.coordinate[y][x]
-        if (c.pawn == 1):
-          goalDistance = point_distance(c.x, c.y, 0, 0)
-          val -= goalDistance
+        if (player.color == "GREEN" and c.pawn == 1):
+          # goalDistance = point_distance(c.x, c.y, 0, 0)
+          goalDistance = [point_distance(c.x, c.y, x-1, y-1) for (x,y) in player.goal if self.coordinate[y-1][x-1].pawn != 1]
+          # val -= goalDistance
+          val += max(goalDistance) if len(goalDistance) else -50
 
-        elif (c.pawn == 2):
-          goalDistance = point_distance(c.x, c.y, self.boardSize-1, self.boardSize-1)
-          val += goalDistance
+        elif (player.color == "RED" and c.pawn == 2):
+          # goalDistance = point_distance(c.x, c.y, self.boardSize-1, self.boardSize-1)
+          goalDistance = [point_distance(c.x, c.y, x-1, y-1) for (x,y) in player.goal if self.coordinate[y-1][x-1].pawn != 2]
+          # val -= goalDistance
+          val += max(goalDistance) if len(goalDistance) else -50
         
     # print("val dari obj func", val)
-    if player.color == "RED":
-      val *= -1
+    # if player.color == "RED":
+    val *= -1
     return val
 
   def minimax(self, depth, playermax, playermin, timelimit, isLocalSearch, a=float("-inf"), b=float("inf"), isMax=True):
@@ -307,11 +311,11 @@ class Board:
 
           # player maximum
           if ((player.color == self.player1.color and self.turn == 1) or (player.color == self.player2.color and self.turn == 2)):
-            if (val > bestval):
+            if (val > bestval or (va[0], va[1]) in player.goal):
               moves.clear()
               moves.append((va[0], va[1]))
               bestval = val
-            elif (val == bestval):
+            elif (val == bestval or (va[0], va[1]) in player.goal):
               moves.append((va[0], va[1]))
           #player minimum
           else:
