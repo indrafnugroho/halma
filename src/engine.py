@@ -65,6 +65,7 @@ class Engine:
                     
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
+                self.board.printBoard()
                 end = time.time()
                 print("Execution time:", end - start)
             else:
@@ -86,6 +87,7 @@ class Engine:
         else:
             # BOT VS USER GUI MODE
             if (self.system == "CMD"):
+                arr_of_time = []
                 start = time.time()
                 while (self.terminate_state() == 0):
                     self.board.printBoard()
@@ -93,8 +95,11 @@ class Engine:
                     print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
 
                     if (self.turn == 2):
+                        startbot = time.time()
                         start_time = time.time()
                         p = Process(target=self.board.executeBotMove())
+                        endbot = time.time()
+                        arr_of_time.append(endbot-startbot)
                         p.start()
                         p.join(timeout=self.timelimit)
 
@@ -154,15 +159,20 @@ class Engine:
                     self.turn = 2 if self.turn == 1 else 1
                 end = time.time()
                 print("Execution time:", end - start)
+                print("Bot execution time:", sum(arr_of_time))
             else:
                 # BOT VS USER GUI MODE
+                arr_of_time = []
                 start = time.time()
                 self.gui = BoardGUI(self.board)
                 # self.gui.mainloop()
                 self.gui.move = True
                 while (self.terminate_state() == 0):
                     if (self.turn == 2 and not(self.gui.move)):
+                        startbot = time.time()
                         self.board.executeBotMove()
+                        endbot = time.time()
+                        arr_of_time.append(endbot - startbot)
                         self.gui.drawPawn()
                         self.gui.move = True
                     else:
@@ -172,6 +182,7 @@ class Engine:
                     self.board.turn = 2 if self.board.turn == 1 else 1
                 end = time.time()
                 print("Execution time:", end - start)
+                print("Bot execution time:", sum(arr_of_time))
                     
 
         won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
