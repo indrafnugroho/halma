@@ -21,7 +21,6 @@ class Player:
     for i in range(1, maxIter):
       for j in range(1, maxIter):
         if (i + j <= maxIter and i < maxIter and j < maxIter):
-          # print ("i = " + str(i) + " j = " + str(j))
           self.pawns.append(Pion(boardSize - j + 1, boardSize - i + 1))
           self.home.append((boardSize - j + 1, boardSize - i + 1))
           self.goal.append((j, i))
@@ -111,12 +110,6 @@ class Player:
         p.y = y2
         self.pawns = sorted(self.pawns, key=lambda p: (p.x, p.y))
         break
-    # self.printStatus()
-        
-
-# 8, 10, 16
-# 10, 15, 19
-
 
 class Pion:
   def __init__(self, x, y):
@@ -142,11 +135,3 @@ class Pion:
   
   def getCoordinate(self):
     return (self.x, self.y)
-
-# a = Player('BLACK', 10)
-# a.printStatus()
-# a = Player('WHITE', 10)
-# a.printStatus()
-# print(a.home)
-# print(a.isExist_home(8,9))
-# print(a.isTerminate())

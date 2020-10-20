@@ -83,7 +83,6 @@ class Board:
     
   def checkAvailablePosition(self, position, delta):
     # mengecek semua yang berdelta 1 itu kosong, dan gak melebihi size board
-    # print("position checked = ", position)
     x, y = position
     availablePosition = []
 
@@ -113,12 +112,6 @@ class Board:
         availablePosition.append((x-2, y+2))
       if (not(self.isEmpty(x-1,y-1)) and (self.isEmpty(x-2, y-2))):
         availablePosition.append((x-2, y-2))
-
-
-    # if (delta == 1):
-    #   print("available pos no jump = ", availablePosition)
-    # else:
-    #   print("available pos before jump = ", availablePosition)
     
     length = len(availablePosition)
     i = 0
@@ -126,24 +119,19 @@ class Board:
       (x, y) = availablePosition[i]
       # jika diluar board
       if(x<1 or y<1 or x>self.boardSize or y>self.boardSize):
-        # print(availablePosition[i], " is out of bond")
         availablePosition.remove(availablePosition[i])
         length -= 1
 
       # jika ada isinya
       elif (delta == 1 and not(self.isEmpty(x, y))):
-        # print(availablePosition[i], " is filled")
         availablePosition.remove(availablePosition[i])
         length -= 1
       else:
-        # print(availablePosition[i], " is AVAILABLE!")
         i += 1
     return availablePosition
 
   def getJump(self, position, jumps, last_position):
     availableJumps = self.checkAvailablePosition(position, 2)
-    # print("available jumps recursive = ", availableJumps)
-    # print("last position = ", last_position)
 
     try:
       availableJumps.remove(last_position)
@@ -166,29 +154,21 @@ class Board:
 
     # posisi saat ini
     current_position = (pawn.x, pawn.y)
-    # print("current position = ", current_position)
 
     # available positions
     availablePosition = self.checkAvailablePosition(current_position, 1)
-    # print("available positions = ", availablePosition)
     availableJump = self.checkAvailablePosition(current_position, 2)
-    # print("available jumps = ", availableJump)
 
     if (len(availableJump) > 0):
       for i in range (len(availableJump)):
         if (availableJump[i] not in availablePosition):
           availablePosition.append(availableJump[i])
-        # print("")
-        # print ("current jump position = ", availableJump[i])
         jumps = []
         self.getJump(availableJump[i], jumps, current_position)
         if (len(jumps) > 0):
           for i in range (len(jumps)):
-            # print("available positions 2 = ", availablePosition)
-            # print("jumps                 = ", jumps[i])
             if (jumps[i] not in availablePosition):
               availablePosition.append(jumps[i])
-        # print("s")
     
     # Cek keluar home atau masuk base
     length = len(availablePosition)
@@ -201,7 +181,6 @@ class Board:
       else:
         i += 1
     availablePosition = sorted(availablePosition, key=lambda tup: (tup[0], tup[1]))
-    # print("Available Position: ", availablePosition)
     return availablePosition
 
   def objectiveFunc(self, player):
@@ -211,25 +190,17 @@ class Board:
 
     val = 0
 
-    ## Ini yang belom di ubah2
-
     for x in range(self.boardSize):
       for y in range(self.boardSize):
         c = self.coordinate[y][x]
         if (player.color == "GREEN" and c.pawn == 1):
-          # goalDistance = point_distance(c.x, c.y, 0, 0)
           goalDistance = [point_distance(c.x, c.y, x-1, y-1) for (x,y) in player.goal if self.coordinate[y-1][x-1].pawn != 1]
-          # val -= goalDistance
           val += max(goalDistance) if len(goalDistance) else -50
 
         elif (player.color == "RED" and c.pawn == 2):
-          # goalDistance = point_distance(c.x, c.y, self.boardSize-1, self.boardSize-1)
           goalDistance = [point_distance(c.x, c.y, x-1, y-1) for (x,y) in player.goal if self.coordinate[y-1][x-1].pawn != 2]
-          # val -= goalDistance
           val += max(goalDistance) if len(goalDistance) else -50
-        
-    # print("val dari obj func", val)
-    # if player.color == "RED":
+
     val *= -1
     return val
 

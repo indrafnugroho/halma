@@ -46,10 +46,10 @@ class Engine:
                     p.start()
                     p.join(timeout=self.timelimit)
 
-                    # if p.is_alive():
-                    #     # If bot is still running
-                    #     p.terminate()
-                    #     print('Bot exceed time limit!')
+                    if p.is_alive():
+                        # If bot is still running
+                        p.terminate()
+                        print('Bot exceed time limit!')
                         
                     end_time = time.time()
                     time_taken = end_time - start_time
@@ -115,7 +115,6 @@ class Engine:
 
                         self.timePlayer2 += time_taken
                             
-                        # self.board.executeBotMove()
                     else:
                         if (self.system == "CMD"):
                             chosen = False
@@ -293,8 +292,6 @@ class BoardGUI(tk.Tk):
         cell = int(canvas_height / self.board_size)
         self.player1Pawn = self.board.player1.pawns
         self.player2Pawn = self.board.player2.pawns
-        # self.board.player.printStatus()
-        # self.board.bot.printStatus()
         # delete previous pawns canvas
         self.canvas.delete('pawn')
 
@@ -305,7 +302,6 @@ class BoardGUI(tk.Tk):
             y1 = row * cell + border_size / 2
             x2 = (col + 1) * cell - border_size / 2
             y2 = (row + 1) * cell - border_size / 2
-            # print("pion player 1 ke-" + str(i) + " col = " + str(col) + " row = " + str(row))
             if (self.board.player1.color == "GREEN"):
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#67BF9B")
             else:
@@ -319,7 +315,6 @@ class BoardGUI(tk.Tk):
             y1 = row * cell + border_size / 2
             x2 = (col + 1) * cell - border_size / 2
             y2 = (row + 1) * cell - border_size / 2
-            # print("pion player 2 ke-" + str(i) + " col = " + str(col) + " row = " + str(row))
             if (self.board.player1.color == "GREEN"):
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#CF6E67")
             else:
@@ -334,53 +329,33 @@ class BoardGUI(tk.Tk):
         toBeBordered = []
         toBeBordered.append(tile)
         if (self.board.selected_tuple == None and self.board.player1.isExist_pawns(column, row)):
-            # for i in range (self.board_size):
-            #     for j in range (self.board_size):
-            #         if (i == row-1 and j == column-1):
-            #             self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 2)
-            #         else:
-            #             self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
-
             if (self.board.player1.isExist_pawns(column, row)):
                 pawn = self.board.player1.getPawn(column, row)
             elif (self.board.player2.isExist_pawns(column, row)):
                 pawn = self.board.player2.getPawn(column, row)
 
             validMoves = self.board.getAksiValid(pawn)
-            # print("valid moves = ", validMoves)
 
             for i in range (len(validMoves)):
                 (x, y) = validMoves[i]
                 tile = self.tiles[x-1, y-1]
                 toBeBordered.append(tile)
 
-            # print("len to be bordered", len(toBeBordered))
             for i in range (len(toBeBordered)):
                 self.canvas.itemconfigure(toBeBordered[i], outline="black", width = 2)
 
             self.board.selected_tuple = (column, row)
-            # print(self.board.selected_tuple)
 
         elif (self.board.selected_tuple != None and (column, row) in self.board.getAksiValid(self.board.player1.getPawn(self.board.selected_tuple[0], self.board.selected_tuple[1]))):
             (x,y) = self.board.selected_tuple
-            # print(column, row)
-            # print(self.board.selected_tuple[0])
-            # print(self.board.getAksiValid(self.board.player1.getPawn(x, y)))
             self.board.movePawn((y, x), (row, column))
-            # self.drawPawn()
             for i in range (self.board_size):
                 for j in range (self.board_size):
                     self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
             self.board.selected_tuple = None
             self.move = False
-            
-            # print(self.board.selected_tuple)
         else:
-            # print(self.board.selected_tuple)
             self.board.selected_tuple = None
-            # (x,y) = self.selected_tuple
-            # print (x,y)
-            # print(self.board.getAksiValid(self.board.player.getPawn()))
             for i in range (self.board_size):
                 for j in range (self.board_size):
                     self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
@@ -430,4 +405,3 @@ if __name__ == "__main__":
             exit()
     
     game = Engine(boardsize, timelimit, player, system, bot)
-    # game.start()
