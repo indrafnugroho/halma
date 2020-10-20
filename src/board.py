@@ -220,15 +220,15 @@ class Board:
         c = self.coordinate[y][x]
         if (c.pawn == 1):
           # print("len green goalcoord:", len(player.goalCoord))
-          goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in self.g_player.goalCoord if g.pawn != 1]
+          goalDistances = point_distance(c.x, c.y, 0, 0)
           # print("goal distances green:", goalDistances)
-          val -= min(goalDistances) if len(goalDistances) > 0 else -50
+          val -= goalDistances
 
         elif (c.pawn == 2):
           # print("len red goalcoord:", len(player.goalCoord))
-          goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in self.r_player.goalCoord if g.pawn != 2]
+          goalDistances = point_distance(c.x, c.y, self.boardSize, self.boardSize)
           # print("goal distances red:", goalDistances)
-          val += min(goalDistances) if len(goalDistances) > 0 else -50
+          val += goalDistances
     
     
     ## Ini dari Nanda nyoba ganti2, belom fix nanti mau diomongin dulu wkwk ##
