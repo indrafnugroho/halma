@@ -7,16 +7,16 @@ import re
 class Engine:
     def __init__(self, boardsize, timelimit, player, system):
         if (player is not None):
-            self.bot = Player("RED" if player=="GREEN" else "GREEN", boardsize)
-            self.player = Player(player, boardsize)
+            self.player2 = Player("RED" if player=="GREEN" else "GREEN", boardsize)
+            self.player1 = Player(player, boardsize)
             self.selfplay = False
         else:
-            self.player = Player("RED", boardsize)
-            self.bot = Player("GREEN", boardsize)
+            self.player1 = Player("RED", boardsize)
+            self.player2 = Player("GREEN", boardsize)
             self.selfplay = True
         
-        self.board = Board(boardsize, timelimit, self.player, self.bot)
-        self.turn = 1 #1 for player, 2 for bot
+        self.board = Board(boardsize, timelimit, self.player1, self.player2, self.selfplay)
+        self.turn = 1 #1 for player1, 2 for player2
         # if (system == "GUI"):
             # set gui here
     
@@ -24,24 +24,23 @@ class Engine:
         if (self.selfplay == True):
             while (self.terminate_state() == 0):
                 self.board.printBoard()
-                print("Turn: ", "PLAYER" if self.turn == 1 else "BOT")
+                print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
 
                 if (self.turn == 2):
                     self.board.executeBotMove()
+                    inp = input("Press enter to continue ")
                 else:
-                    self.board.player = self.bot
-                    self.board.bot = self.player
                     self.board.executeBotMove()
-                    self.board.player = self.player
-                    self.board.bot = self.bot
+                    inp = input("Press enter to continue ")
                 
                 self.turn = 2 if self.turn == 1 else 1
+                self.board.turn = 2 if self.board.turn == 1 else 1
         else:
             while (self.terminate_state() == 0):
                 self.board.printBoard()
-                player = self.player if self.turn == 1 else self.bot
+                player = self.player1 if self.turn == 1 else self.player2
                 # print(player.color)
-                bot = self.bot if self.turn == 1 else self.player
+                # bot = self.player2 if self.turn == 1 else self.player1
                 # for p in player.pawns:
                 #     print(p.x, p.y)
                 # print("player goal")
@@ -53,7 +52,7 @@ class Engine:
                 # print("bot goal")
                 # for i in bot.goal:
                 #     print(i)
-                print("Turn: ", "PLAYER" if self.turn == 1 else "BOT")
+                print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
 
                 if (self.turn == 2):
                     self.board.executeBotMove()
@@ -105,9 +104,9 @@ class Engine:
     
     def terminate_state(self):
         result = None
-        if(self.player.isTerminate() and not(self.bot.isTerminate())):
+        if(self.player1.isTerminate() and not(self.player2.isTerminate())):
             result = 1
-        elif(self.bot.isTerminate() and not(self.player.isTerminate())):
+        elif(self.player2.isTerminate() and not(self.player1.isTerminate())):
             result = 2
         else:
             result = 0 #0 for notterminate
