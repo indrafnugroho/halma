@@ -6,6 +6,7 @@ import math
 import sys
 import re
 from multiprocessing import Process
+import time
 
 class Engine:
     def __init__(self, boardsize, timelimit, player, system, bot):
@@ -22,6 +23,8 @@ class Engine:
         self.turn = 1 #1 for player, 2 for bot
         self.bot = bot
         self.timelimit = self.board.timelimit
+        self.timePlayer1 = 0
+        self.timePlayer2 = 0
         if (system == "GUI"):
             self.system = "GUI"
         else:
@@ -35,17 +38,27 @@ class Engine:
                     self.board.printBoard()
                     print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
 
+                    start_time = time.time()
                     p = Process(target=self.board.executeBotMove())
                     p.start()
                     p.join(timeout=self.timelimit)
 
-                    if p.is_alive():
-                        # If bot is still running
-                        p.terminate()
-                        print('Bot exceed time limit!')
+                    # if p.is_alive():
+                    #     # If bot is still running
+                    #     p.terminate()
+                    #     print('Bot exceed time limit!')
                         
+                    end_time = time.time()
+                    time_taken = end_time - start_time
 
-                    inp = input("Press enter to continue ")
+                    print("Time taken for bot", self.turn, ":", time_taken)
+
+                    if (self.turn == 1):
+                        self.timePlayer1 += time_taken
+                    else:
+                        self.timePlayer2 += time_taken
+                    
+                    # inp = input("Press enter to continue ")
                     
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
@@ -66,6 +79,7 @@ class Engine:
                     print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
 
                     if (self.turn == 2):
+                        start_time = time.time()
                         p = Process(target=self.board.executeBotMove())
                         p.start()
                         p.join(timeout=self.timelimit)
@@ -74,6 +88,13 @@ class Engine:
                             # If bot is still running
                             p.terminate()
                             print('Bot exceed time limit!')
+
+                        end_time = time.time()
+                        time_taken = end_time - start_time
+
+                        print("Time taken for bot", self.turn, ":", time_taken)
+
+                        self.timePlayer2 += time_taken
                             
                         # self.board.executeBotMove()
                     else:
@@ -133,6 +154,11 @@ class Engine:
 
         won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
         print(won_player + " wins the game!")
+        if not self.selfplay:
+            print('Total time for bot:', self.timePlayer2)
+        else:
+            print('Total time for bot 1:', self.timePlayer1)
+            print('Total time for bot 2:', self.timePlayer2)
 
     def terminate_state(self):
         result = None
