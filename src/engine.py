@@ -21,41 +21,20 @@ class Engine:
         self.board = Board(boardsize, timelimit, self.player1, self.player2, self.selfplay, bot) 
         self.turn = 1 #1 for player, 2 for bot
         self.bot = bot
+        self.timelimit = self.board.timelimit
         if (system == "GUI"):
             self.system = "GUI"
-            self.gui = BoardGUI(self.board)
-            self.gui.mainloop()
         else:
             self.system = "CMD"
-            self.start()
+        self.start()
     
     def start(self):
         if (self.selfplay == True):
-            while (self.terminate_state() == 0):
-                self.board.printBoard()
-                print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
+            if (self.system == "CMD"):
+                while (self.terminate_state() == 0):
+                    self.board.printBoard()
+                    print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
 
-                p = Process(target=self.board.executeBotMove())
-                p.start()
-                p.join(timeout=self.timelimit)
-
-                if p.is_alive():
-                    # If bot is still running
-                    p.terminate()
-                    print('Bot exceed time limit!')
-                    
-
-                inp = input("Press enter to continue ")
-                
-                self.turn = 2 if self.turn == 1 else 1
-                self.board.turn = 2 if self.board.turn == 1 else 1
-        else:
-            while (self.terminate_state() == 0):
-                self.board.printBoard()
-                player = self.player1 if self.turn == 1 else self.player2
-                print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
-
-                if (self.turn == 2):
                     p = Process(target=self.board.executeBotMove())
                     p.start()
                     p.join(timeout=self.timelimit)
@@ -65,50 +44,93 @@ class Engine:
                         p.terminate()
                         print('Bot exceed time limit!')
                         
-                    # self.board.executeBotMove()
-                else:
-                    if (self.system == "CMD"):
-                        chosen = False
-                        while (not(chosen)):
-                            pawn = input("Choose your pawn. Write in [x,y] without [] ")
-                        
-                            if not(re.search("[0-9][,][0-9]", pawn) == None):
-                                fromx, fromy = pawn.split(",")
-                                fromx = int(fromx)
-                                fromy = int(fromy)
-                                if (not(player.isExist_pawns(fromx, fromy))):
-                                    pawns = ''
-                                    for i in range (len(player.pawns)):
-                                        pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
-                                    print("Pawn not available in current coordinate! Available pawns :", pawns)
-                                elif (len(self.board.getMoveFromTile(player, fromx, fromy)) == 0):
-                                    pawns = ''
-                                    for i in range (len(player.pawns)):
-                                        if (player.pawns[i].x != fromx and player.pawns[i].y != fromy):
-                                            pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
-                                    print("No move available, please choose other pawn! Available pawns :", pawns)
-                                else:
-                                    chosen = True
 
-                        moved = False
-                        while not(moved):
-                            print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
-                            move = input("Where do you want to move? Write in [x,y] without [] ")
+                    inp = input("Press enter to continue ")
+                    
+                    self.turn = 2 if self.turn == 1 else 1
+                    self.board.turn = 2 if self.board.turn == 1 else 1
+            else:
+                self.gui = BoardGUI(self.board)
+                self.gui.mainloop()
+                while (self.terminate_state() == 0):
+                    self.gui.drawPawn()
+                    self.board.executeBotMove()
+                    self.turn = 2 if self.turn == 1 else 1
+                    self.board.turn = 2 if self.board.turn == 1 else 1
+
+        else:
+            if (self.system == "CMD"):
+                while (self.terminate_state() == 0):
+                    self.board.printBoard()
+                    player = self.player1 if self.turn == 1 else self.player2
+                    print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
+
+                    if (self.turn == 2):
+                        p = Process(target=self.board.executeBotMove())
+                        p.start()
+                        p.join(timeout=self.timelimit)
+
+                        if p.is_alive():
+                            # If bot is still running
+                            p.terminate()
+                            print('Bot exceed time limit!')
                             
-                            if (not(re.search("[0-9][,][0-9]", move) == None)):
-                                to_x, to_y = move.split(",")
-                                to_x = int(to_x)
-                                to_y = int(to_y)
-                                if ((to_x, to_y) in self.board.getMoveFromTile(player, fromx, fromy)):
-                                    print("Executing moves...")
-                                    self.board.movePawn((fromy, fromx), (to_y, to_x))
-                                    print()
-                                    moved = True
-                                else:
-                                    print("Invalid move!")
+                        # self.board.executeBotMove()
+                    else:
+                        if (self.system == "CMD"):
+                            chosen = False
+                            while (not(chosen)):
+                                pawn = input("Choose your pawn. Write in [x,y] without [] ")
+                            
+                                if not(re.search("[0-9][,][0-9]", pawn) == None):
+                                    fromx, fromy = pawn.split(",")
+                                    fromx = int(fromx)
+                                    fromy = int(fromy)
+                                    if (not(player.isExist_pawns(fromx, fromy))):
+                                        pawns = ''
+                                        for i in range (len(player.pawns)):
+                                            pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
+                                        print("Pawn not available in current coordinate! Available pawns :", pawns)
+                                    elif (len(self.board.getMoveFromTile(player, fromx, fromy)) == 0):
+                                        pawns = ''
+                                        for i in range (len(player.pawns)):
+                                            if (player.pawns[i].x != fromx and player.pawns[i].y != fromy):
+                                                pawns += "(" + str(player.pawns[i].x) + "," + str(player.pawns[i].y) + ") "
+                                        print("No move available, please choose other pawn! Available pawns :", pawns)
+                                    else:
+                                        chosen = True
 
-                self.turn = 2 if self.turn == 1 else 1
-        
+                            moved = False
+                            while not(moved):
+                                print("Available moves: ", self.board.getMoveFromTile(player, fromx, fromy))
+                                move = input("Where do you want to move? Write in [x,y] without [] ")
+                                
+                                if (not(re.search("[0-9][,][0-9]", move) == None)):
+                                    to_x, to_y = move.split(",")
+                                    to_x = int(to_x)
+                                    to_y = int(to_y)
+                                    if ((to_x, to_y) in self.board.getMoveFromTile(player, fromx, fromy)):
+                                        print("Executing moves...")
+                                        self.board.movePawn((fromy, fromx), (to_y, to_x))
+                                        print()
+                                        moved = True
+                                    else:
+                                        print("Invalid move!")
+
+                    self.turn = 2 if self.turn == 1 else 1
+            else:
+                self.gui = BoardGUI(self.board)
+                # self.gui.mainloop()
+                while (self.terminate_state() == 0):
+                    self.gui.drawPawn()
+                    if (self.turn == 2):
+                        self.board.executeBotMove()
+                    # else:
+                    #     self.gui.wait_variable(self.gui.waitvar)
+                    self.turn = 2 if self.turn == 1 else 1
+                    self.board.turn = 2 if self.board.turn == 1 else 1
+                    
+
         won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
         print(won_player + " wins the game!")
 
@@ -159,6 +181,7 @@ class BoardGUI(tk.Tk):
         self.rowconfigure(self.board_size + 1, minsize=50)
         self.canvas.bind("<Configure>", self.drawTiles)
         self.board.selected_tuple= None
+        self.waitvar = tk.IntVar()
     
     def drawTiles(self, event=None):
         self.canvas.delete("tile")
@@ -200,7 +223,7 @@ class BoardGUI(tk.Tk):
                         color = '#BAA077'
                 tile = self.canvas.create_rectangle(x1, y1, x2, y2, tags="tile", width=0, fill=color)
                 self.tiles[col,row] = tile
-                self.canvas.tag_bind(tile, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1))
+                self.canvas.tag_bind(tile, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1), self.waitvar.set(1))
 
         self.drawPawn()
 
@@ -228,7 +251,7 @@ class BoardGUI(tk.Tk):
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#67BF9B")
             else:
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#CF6E67")
-            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1))
+            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1), self.waitvar.set(1))
 
         for i in range(len(self.player2Pawn)):
             col = self.player2Pawn[i].x - 1
@@ -266,7 +289,7 @@ class BoardGUI(tk.Tk):
                 pawn = self.board.player2.getPawn(column, row)
 
             validMoves = self.board.getAksiValid(pawn)
-            print("valid moves = ", validMoves)
+            # print("valid moves = ", validMoves)
 
             for i in range (len(validMoves)):
                 (x, y) = validMoves[i]
@@ -275,26 +298,29 @@ class BoardGUI(tk.Tk):
 
             # print("len to be bordered", len(toBeBordered))
             for i in range (len(toBeBordered)):
+
                 self.canvas.itemconfigure(toBeBordered[i], outline="black", width = 2)
 
             self.board.selected_tuple = (column, row)
-            print(self.board.selected_tuple)
-            
+            # print(self.board.selected_tuple)
+            self.waitvar = tk.IntVar()
 
         elif (self.board.selected_tuple != None and (column, row) in self.board.getAksiValid(self.board.player1.getPawn(self.board.selected_tuple[0], self.board.selected_tuple[1]))):
             (x,y) = self.board.selected_tuple
-            print(column, row)
-            print(self.board.selected_tuple[0])
-            print(self.board.getAksiValid(self.board.player1.getPawn(x, y)))
+            print(self.waitvar.get())
+            # print(column, row)
+            # print(self.board.selected_tuple[0])
+            # print(self.board.getAksiValid(self.board.player1.getPawn(x, y)))
             self.board.movePawn((y, x), (row, column))
-            self.drawPawn()
+            # self.drawPawn()
             for i in range (self.board_size):
                 for j in range (self.board_size):
                     self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
             self.board.selected_tuple = None
         else:
-            print(self.board.selected_tuple)
+            # print(self.board.selected_tuple)
             self.board.selected_tuple = None
+            self.waitvar = tk.IntVar()
             # (x,y) = self.selected_tuple
             # print (x,y)
             # print(self.board.getAksiValid(self.board.player.getPawn()))
