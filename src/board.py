@@ -6,7 +6,7 @@ import time
 import copy
 
 class Board:
-  def __init__(self, boardSize, timeLimit, p1, p2, selfplay):
+  def __init__(self, boardSize, timeLimit, p1, p2, selfplay, bot):
     self.boardSize = boardSize
     self.timelimit = timeLimit
     self.player1 = p1
@@ -15,11 +15,9 @@ class Board:
     self.r_player = p2 if p2.color == "RED" else p1
     self.turn = 1
     self.coordinate = [[Coordinate(i, j) for i in range(self.boardSize)] for j in range(self.boardSize)]
-    self.depth = 2
+    self.depth = 3
     self.selfplay = selfplay
-    # self.system = system
-    # if (system == "GUI"):
-    #   self.GUI = BoardGUI(self.oa)
+    self.bot = bot
     
     if self.boardSize == 8:
       maxIter = 4
@@ -226,7 +224,7 @@ class Board:
 
         elif (c.pawn == 2):
           # print("len red goalcoord:", len(player.goalCoord))
-          goalDistances = point_distance(c.x, c.y, self.boardSize, self.boardSize)
+          goalDistances = point_distance(c.x, c.y, self.boardSize-1, self.boardSize-1)
           # print("goal distances red:", goalDistances)
           val += goalDistances
     
@@ -258,7 +256,7 @@ class Board:
       val *= -1
     return val
 
-  def minimax(self, depth, playermax, playermin, timelimit, a=float("-inf"), b=float("inf"), isMax=True):
+  def minimax(self, depth, playermax, playermin, timelimit, isLocalSearch, a=float("-inf"), b=float("inf"), isMax=True):
     # basis
     if depth == 0 or time.time() > timelimit:
       return self.objectiveFunc(playermax), None
@@ -266,78 +264,48 @@ class Board:
     bestmove = None
     if isMax:
       bestval = float("-inf")
-      # possiblemoves = self.getPlayerMoves(playermax)
-      possiblemoves = self.localSearch(playermax)
-      # for move in possiblemoves:
-      #   print('-------------------------')
-      #   print('FROM: ', move['from'].x, ", ", move['from'].y)
-      #   for tos in move['to']:
-      #     print('TO: ', tos.x, ", ", tos.y)
+      if isLocalSearch:
+        possiblemoves = self.localSearch(playermax)
+      else:
+        possiblemoves = self.getPlayerMoves(playermax)
         
     else:
       bestval = float("inf")
-      # possiblemoves = self.getPlayerMoves(playermin)
-      possiblemoves = self.localSearch(playermin)
+      if isLocalSearch:
+        possiblemoves = self.localSearch(playermin)
+      else:
+        possiblemoves = self.getPlayerMoves(playermin)
 
     # untuk setiap move yang mungkin
     for move in possiblemoves:
       for to in move["to"]:
-
-        # Print Info about pawn's movement
-        # print('----------------------')
-        # print("FROM: ", move['from'].x, ", ", move['from'].y)
-        # print("TO: ", to.x, ", ", to.y)
-
         # keluar apabila melebihi timelimit
         if time.time() > timelimit:
           return bestval, bestmove
 
         # memindahkan sementara pion
-        # print("bestval sebelum rekursif", bestval)
-        # print("from", move["from"].x+1, move["from"].y+1)
-        # print("to", to.x+1, to.y+1)
         self.tempMovePawn((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
 
         # minimax rekursif
-        val, _ = self.minimax(depth - 1, playermax, playermin, timelimit, a, b, not isMax)
+        val, _ = self.minimax(depth - 1, playermax, playermin, timelimit, isLocalSearch, a, b, not isMax)
 
         # mengembalikan pion ke tempat semula
         self.tempMovePawn((to.y+1, to.x+1), (move["from"].y+1, move["from"].x+1))
 
-        # print("val setelah rekursif", val)
-        # print("bestval setelah rekursif", bestval)
-        # print("from setelah rekursif", (move["from"].x+1, move["from"].y+1))
-        # print("to setelah rekursif", (to.x+1, to.y+1))
-        # print("----------------------")
-
         if isMax and val > bestval:
-          # print("masuk max")
           bestval = val
           bestmove = ((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
-          # print("bestmove", bestmove)
-          # print("a", a)
-          # print("val", val)
-          # print("------------------")
           a = max(a, val)
 
         if not isMax and val < bestval:
-          # print("masuk min")
           bestval = val
           bestmove = ((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
-          # print("bestmove", bestmove)
-          # print("b", b)
-          # print("val", val)
-          # print("------------------")
           b = min(b, val)
 
+        # alpha beta pruning
         if b <= a:
-          # print("masuk ab pruning")
-          # print("bestmove yang direturn di pruning", bestmove)
-          # print("-------------------")
           return bestval, bestmove
-    
-    # print("bestvalue akhir yg direturn", bestval)
-    # print("bestmove akhir yg direturn", bestmove)
+
     return bestval, bestmove
 
   # localsearch mengurangi jumlah move yang dapat diambil dari sebuah pion
@@ -372,7 +340,8 @@ class Board:
               bestval = val
             elif (val == bestval):
               moves.append((va[0], va[1]))
-          else: #player minimum
+          #player minimum
+          else:
             if (val < bestval):
               moves.clear()
               moves.append((va[0], va[1]))
@@ -449,10 +418,17 @@ class Board:
     if (self.selfplay):
       playermax = self.player1 if self.turn == 1 else self.player2
       playermin = self.player2 if self.turn == 1 else self.player1
+      if (self.turn == 2):
+        _, move = self.minimax(self.depth, playermax, playermin, max_time, True)
+      else:
+        _, move = self.minimax(self.depth, playermax, playermin, max_time, False)
     else:
       playermax = self.player2
       playermin = self.player1
-    _, move = self.minimax(self.depth, playermax, playermin, max_time)
+      if (self.bot == "MLS"):
+        _, move = self.minimax(self.depth, playermax, playermin, max_time, True)
+      else:
+        _, move = self.minimax(self.depth, playermax, playermin, max_time, False)
 
     # memindahkan pion
     if move is None:

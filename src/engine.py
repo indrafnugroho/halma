@@ -7,7 +7,7 @@ import sys
 import re
 
 class Engine:
-    def __init__(self, boardsize, timelimit, player, system):
+    def __init__(self, boardsize, timelimit, player, system, bot):
         if (player is not None):
             self.player2 = Player("RED" if player=="GREEN" else "GREEN", boardsize)
             self.player1 = Player(player, boardsize)
@@ -17,8 +17,9 @@ class Engine:
             self.player2 = Player("GREEN", boardsize)
             self.selfplay = True
         
-        self.board = Board(boardsize, timelimit, self.player1, self.player2, self.selfplay) 
+        self.board = Board(boardsize, timelimit, self.player1, self.player2, self.selfplay, bot) 
         self.turn = 1 #1 for player, 2 for bot
+        self.bot = bot
         if (system == "GUI"):
             self.system = "GUI"
             self.gui = BoardGUI(self.board)
@@ -46,19 +47,6 @@ class Engine:
             while (self.terminate_state() == 0):
                 self.board.printBoard()
                 player = self.player1 if self.turn == 1 else self.player2
-                # print(player.color)
-                # bot = self.player2 if self.turn == 1 else self.player1
-                # for p in player.pawns:
-                #     print(p.x, p.y)
-                # print("player goal")
-                # for i in player.goal:
-                # #     print(i)
-                # print(bot.color)
-                # for q in bot.pawns:
-                #     print(q.x, q.y)
-                # print("bot goal")
-                # for i in bot.goal:
-                #     print(i)
                 print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
 
                 if (self.turn == 2):
@@ -66,7 +54,6 @@ class Engine:
                 else:
                     if (self.system == "CMD"):
                         chosen = False
-                        # player.printStatus()
                         while (not(chosen)):
                             pawn = input("Choose your pawn. Write in [x,y] without [] ")
                         
@@ -118,7 +105,6 @@ class Engine:
             result = 2
         else:
             result = 0 #0 for notterminate
-        # print("result is ", result)
         return result
 
 
@@ -330,11 +316,19 @@ if __name__ == "__main__":
     if (system not in ["CMD", "GUI"]):
         print("gamesystem should be CMD/GUI")
     
+    bot = None
     if player is not None:
         player = player.upper()
         if player not in ["RED", "GREEN"]:
             print("player should be RED/GREEN")
             exit()
-            
-    game = Engine(boardsize, timelimit, player, system)
+        print("What bot do you want to fight? [Minimax/MinimaxLocalSearch]")
+        bot = input("Write the abbreviation of choices above [M/MLS]: ")
+
+        bot = bot.upper()
+        if bot not in ["M", "MLS"]:
+            print("bot should be M/MLS")
+            exit()
+    
+    game = Engine(boardsize, timelimit, player, system, bot)
     # game.start()
