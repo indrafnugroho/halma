@@ -341,6 +341,7 @@ class Board:
           val = self.objectiveFunc(player)
           self.tempMovePawn((va[1], va[0]), (temp.y, temp.x))
 
+          # player maximum
           if ((player.color == self.player1.color and self.turn == 1) or (player.color == self.player2.color and self.turn == 2)):
             if (val > bestval):
               moves.clear()
@@ -348,7 +349,7 @@ class Board:
               bestval = val
             elif (val == bestval):
               moves.append((va[0], va[1]))
-          else:
+          else: #player minimum
             if (val < bestval):
               moves.clear()
               moves.append((va[0], va[1]))

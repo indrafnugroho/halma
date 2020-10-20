@@ -27,6 +27,7 @@ class Engine:
             self.gui.mainloop()
         else:
             self.system = "CMD"
+            self.start()
     
     def start(self):
         if (self.selfplay == True):
@@ -213,7 +214,7 @@ class BoardGUI(tk.Tk):
                     else:
                         color = '#BAA077'
                 tile = self.canvas.create_rectangle(x1, y1, x2, y2, tags="tile", width=0, fill=color)
-                self.tiles[row,col] = tile
+                self.tiles[col,row] = tile
                 self.canvas.tag_bind(tile, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1))
 
         self.drawPawn()
@@ -262,16 +263,17 @@ class BoardGUI(tk.Tk):
         self.update()
 
     def clicked(self, row, column):
-        tile = self.tiles[row -1, column-1]
+        tile = self.tiles[column -1, row-1]
+        # print("tile di click", tile)
         toBeBordered = []
         toBeBordered.append(tile)
-        if (self.board.selected_tuple == None and self.board.player1.isExist_pawns(row, column)):
-            for i in range (self.board_size):
-                for j in range (self.board_size):
-                    if (i == row-1 and j == column-1):
-                        self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 2)
-                    else:
-                        self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
+        if (self.board.selected_tuple == None and self.board.player1.isExist_pawns(column, row)):
+            # for i in range (self.board_size):
+            #     for j in range (self.board_size):
+            #         if (i == row-1 and j == column-1):
+            #             self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 2)
+            #         else:
+            #             self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
 
             if (self.board.player1.isExist_pawns(column, row)):
                 pawn = self.board.player1.getPawn(column, row)
@@ -283,9 +285,10 @@ class BoardGUI(tk.Tk):
 
             for i in range (len(validMoves)):
                 (x, y) = validMoves[i]
-                tile = self.tiles[y-1, x-1]
+                tile = self.tiles[x-1, y-1]
                 toBeBordered.append(tile)
 
+            # print("len to be bordered", len(toBeBordered))
             for i in range (len(toBeBordered)):
                 self.canvas.itemconfigure(toBeBordered[i], outline="black", width = 2)
 
@@ -295,10 +298,10 @@ class BoardGUI(tk.Tk):
 
         elif (self.board.selected_tuple != None and (column, row) in self.board.getAksiValid(self.board.player1.getPawn(self.board.selected_tuple[0], self.board.selected_tuple[1]))):
             (x,y) = self.board.selected_tuple
-            print(row, column)
+            print(column, row)
             print(self.board.selected_tuple[0])
             print(self.board.getAksiValid(self.board.player1.getPawn(x, y)))
-            self.board.movePawn((self.board.selected_tuple[1], self.board.selected_tuple[0]), (row,column))
+            self.board.movePawn((y, x), (row, column))
             self.drawPawn()
             for i in range (self.board_size):
                 for j in range (self.board_size):
@@ -350,4 +353,4 @@ if __name__ == "__main__":
             exit()
             
     game = Engine(boardsize, timelimit, player, system)
-    game.start()
+    # game.start()
