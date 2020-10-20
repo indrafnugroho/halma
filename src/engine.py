@@ -5,6 +5,7 @@ import tkinter as tk
 import math
 import sys
 import re
+import time
 from multiprocessing import Process
 import time
 
@@ -34,6 +35,8 @@ class Engine:
     def start(self):
         if (self.selfplay == True):
             if (self.system == "CMD"):
+                # BOT VS BOT CMD MODE
+                start = time.time()
                 while (self.terminate_state() == 0):
                     self.board.printBoard()
                     print("Turn: ", "PLAYER1" if self.turn == 1 else "PLAYER2")
@@ -62,17 +65,28 @@ class Engine:
                     
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
+                end = time.time()
+                print("Execution time:", end - start)
             else:
+                # BOT VS BOT GUI MODE
+                start = time.time()
                 self.gui = BoardGUI(self.board)
-                self.gui.mainloop()
+                # self.gui.mainloop()
                 while (self.terminate_state() == 0):
                     self.gui.drawPawn()
-                    self.board.executeBotMove()
+                    if (self.turn == 2):
+                        self.board.executeBotMove()
+                    else:
+                        self.board.executeBotMove()
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
-
+                end = time.time()
+                print("Execution time:", end - start)
+                
         else:
+            # BOT VS USER GUI MODE
             if (self.system == "CMD"):
+                start = time.time()
                 while (self.terminate_state() == 0):
                     self.board.printBoard()
                     player = self.player1 if self.turn == 1 else self.player2
@@ -139,17 +153,26 @@ class Engine:
                                         print("Invalid move!")
 
                     self.turn = 2 if self.turn == 1 else 1
+                end = time.time()
+                print("Execution time:", end - start)
             else:
+                # BOT VS USER GUI MODE
+                start = time.time()
                 self.gui = BoardGUI(self.board)
                 # self.gui.mainloop()
+                self.gui.move = True
                 while (self.terminate_state() == 0):
-                    self.gui.drawPawn()
-                    if (self.turn == 2):
+                    if (self.turn == 2 and not(self.gui.move)):
                         self.board.executeBotMove()
-                    # else:
-                    #     self.gui.wait_variable(self.gui.waitvar)
+                        self.gui.drawPawn()
+                        self.gui.move = True
+                    else:
+                        self.gui.drawPawn()
+                        # self.gui.move = False
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
+                end = time.time()
+                print("Execution time:", end - start)
                     
 
         won_player = "Player 1" if self.terminate_state() == 1 else "Player 2"
@@ -207,7 +230,6 @@ class BoardGUI(tk.Tk):
         self.rowconfigure(self.board_size + 1, minsize=50)
         self.canvas.bind("<Configure>", self.drawTiles)
         self.board.selected_tuple= None
-        self.waitvar = tk.IntVar()
     
     def drawTiles(self, event=None):
         self.canvas.delete("tile")
@@ -249,7 +271,7 @@ class BoardGUI(tk.Tk):
                         color = '#BAA077'
                 tile = self.canvas.create_rectangle(x1, y1, x2, y2, tags="tile", width=0, fill=color)
                 self.tiles[col,row] = tile
-                self.canvas.tag_bind(tile, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1), self.waitvar.set(1))
+                self.canvas.tag_bind(tile, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1))
 
         self.drawPawn()
 
@@ -277,7 +299,7 @@ class BoardGUI(tk.Tk):
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#67BF9B")
             else:
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#CF6E67")
-            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1), self.waitvar.set(1))
+            self.canvas.tag_bind(pawn, "<1>", lambda event, row=row, col=col: self.clicked(row+1, col+1))
 
         for i in range(len(self.player2Pawn)):
             col = self.player2Pawn[i].x - 1
@@ -298,7 +320,6 @@ class BoardGUI(tk.Tk):
 
     def clicked(self, row, column):
         tile = self.tiles[column -1, row-1]
-        # print("tile di click", tile)
         toBeBordered = []
         toBeBordered.append(tile)
         if (self.board.selected_tuple == None and self.board.player1.isExist_pawns(column, row)):
@@ -324,16 +345,13 @@ class BoardGUI(tk.Tk):
 
             # print("len to be bordered", len(toBeBordered))
             for i in range (len(toBeBordered)):
-
                 self.canvas.itemconfigure(toBeBordered[i], outline="black", width = 2)
 
             self.board.selected_tuple = (column, row)
             # print(self.board.selected_tuple)
-            self.waitvar = tk.IntVar()
 
         elif (self.board.selected_tuple != None and (column, row) in self.board.getAksiValid(self.board.player1.getPawn(self.board.selected_tuple[0], self.board.selected_tuple[1]))):
             (x,y) = self.board.selected_tuple
-            print(self.waitvar.get())
             # print(column, row)
             # print(self.board.selected_tuple[0])
             # print(self.board.getAksiValid(self.board.player1.getPawn(x, y)))
@@ -343,16 +361,19 @@ class BoardGUI(tk.Tk):
                 for j in range (self.board_size):
                     self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
             self.board.selected_tuple = None
+            self.move = False
+            
+            # print(self.board.selected_tuple)
         else:
             # print(self.board.selected_tuple)
             self.board.selected_tuple = None
-            self.waitvar = tk.IntVar()
             # (x,y) = self.selected_tuple
             # print (x,y)
             # print(self.board.getAksiValid(self.board.player.getPawn()))
             for i in range (self.board_size):
                 for j in range (self.board_size):
                     self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
+        self.update()
 
 
 
