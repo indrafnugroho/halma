@@ -217,39 +217,12 @@ class Board:
       for y in range(self.boardSize):
         c = self.coordinate[y][x]
         if (c.pawn == 1):
-          # print("len green goalcoord:", len(player.goalCoord))
-          goalDistances = point_distance(c.x, c.y, 0, 0)
-          # print("goal distances green:", goalDistances)
-          val -= goalDistances
+          goalDistance = point_distance(c.x, c.y, 0, 0)
+          val -= goalDistance
 
         elif (c.pawn == 2):
-          # print("len red goalcoord:", len(player.goalCoord))
-          goalDistances = point_distance(c.x, c.y, self.boardSize-1, self.boardSize-1)
-          # print("goal distances red:", goalDistances)
-          val += goalDistances
-    
-    
-    ## Ini dari Nanda nyoba ganti2, belom fix nanti mau diomongin dulu wkwk ##
-
-
-    # for x in range(self.boardSize):
-    #   for y in range(self.boardSize):
-    #     c = self.coordinate[y][x]
-    #     # print(c.x, c.y)
-    #     if (c.pawn == 1):
-    #       # print(c.x, c.y)
-    #       goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 1]
-    #       # print('Distances')
-    #       # print(goalDistances)
-    #       val -= max(goalDistances) if len(goalDistances) > 0 else 0
-    #       # print(val)
-
-    #     elif (c.pawn == 2):
-    #       goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 2]
-    #       # print('Distances')
-    #       # print(goalDistances)
-    #       val += max(goalDistances) if len(goalDistances) > 0 else 0
-    #       # print(val)
+          goalDistance = point_distance(c.x, c.y, self.boardSize-1, self.boardSize-1)
+          val += goalDistance
         
     # print("val dari obj func", val)
     if player.color == "RED":
