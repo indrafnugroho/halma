@@ -6,16 +6,17 @@ import time
 import copy
 
 class Board:
-  def __init__(self, boardSize, timeLimit, player, bot):
+  def __init__(self, boardSize, timeLimit, p1, p2, selfplay):
     self.boardSize = boardSize
     self.timelimit = timeLimit
-    self.player = player
-    self.bot = bot
-    self.g_player = player if player.color == "GREEN" else bot
-    self.r_player = bot if bot.color == "RED" else player
-    self.turn = "GREEN"
+    self.player1 = p1
+    self.player2 = p2
+    self.g_player = p1 if p1.color == "GREEN" else p2
+    self.r_player = p2 if p2.color == "RED" else p1
+    self.turn = 1
     self.coordinate = [[Coordinate(i, j) for i in range(self.boardSize)] for j in range(self.boardSize)]
     self.depth = 2
+    self.selfplay = selfplay
     # self.system = system
     # if (system == "GUI"):
     #   self.GUI = BoardGUI(self.oa)
@@ -32,13 +33,12 @@ class Board:
         if (i + j < maxIter and i < 6 and j < 6):
           self.coordinate[i][j].color = "RED"
           self.coordinate[i][j].pawn = 2
-          self.g_player.homeCoord.append(self.coordinate[i][j])
-          self.r_player.goalCoord.append(self.coordinate[i][j])
+          self.r_player.homeCoord.append(self.coordinate[i][j])
+          self.g_player.goalCoord.append(self.coordinate[i][j])
           self.coordinate[self.boardSize - 1 - i][self.boardSize - 1 - j].color = "GREEN"
           self.coordinate[self.boardSize - 1 - i][self.boardSize - 1 - j].pawn = 1
-          self.r_player.goalCoord.append(self.coordinate[self.boardSize - 1 - i][self.boardSize - 1 - j])
-          self.g_player.homeCoord.append(self.coordinate[self.boardSize - 1 - i][self.boardSize - 1 - j])
-    # print(self.coordinate[0][1].x, self.coordinate[0][1].y)
+          self.g_player.goalCoord.append(self.coordinate[self.boardSize - 1 - i][self.boardSize - 1 - j])
+          self.r_player.homeCoord.append(self.coordinate[self.boardSize - 1 - i][self.boardSize - 1 - j])
 
   def printBoard(self):
     for i in range(self.boardSize + 1):
@@ -72,7 +72,7 @@ class Board:
     return self.boardSize
   
   def isEmpty(self,x,y):
-    if(self.player.isExist_pawns(x,y) or self.bot.isExist_pawns(x,y)):
+    if(self.player1.isExist_pawns(x,y) or self.player2.isExist_pawns(x,y)):
       return False
     else:
       return True
@@ -161,10 +161,10 @@ class Board:
           self.getJump(availableJumps[i], jumps, position)
         
   def getAksiValid(self, pawn):
-    if (self.player.isExist_pawns(pawn.x, pawn.y)):
-        player = self.player
+    if (self.player1.isExist_pawns(pawn.x, pawn.y)):
+        player = self.player1
     else:
-        player = self.bot
+        player = self.player2
 
     # posisi saat ini
     current_position = (pawn.x, pawn.y)
@@ -215,40 +215,43 @@ class Board:
 
     ## Ini yang belom di ubah2
 
-    # for x in range(self.boardSize):
-    #   for y in range(self.boardSize):
-    #     c = self.coordinate[y][x]
-    #     # print(c.x, c.y)
-    #     if (c.pawn == 1):
-    #       goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in player.goalCoord if g.pawn != 1]
-    #       val -= max(goalDistances) if len(goalDistances) > 0 else -50
+    for x in range(self.boardSize):
+      for y in range(self.boardSize):
+        c = self.coordinate[y][x]
+        if (c.pawn == 1):
+          # print("len green goalcoord:", len(player.goalCoord))
+          goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in self.g_player.goalCoord if g.pawn != 1]
+          # print("goal distances green:", goalDistances)
+          val -= min(goalDistances) if len(goalDistances) > 0 else -50
 
-    #     elif (c.pawn == 2):
-    #       goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in player.goalCoord if g.pawn != 2]
-    #       val += max(goalDistances) if len(goalDistances) > 0 else -50
+        elif (c.pawn == 2):
+          # print("len red goalcoord:", len(player.goalCoord))
+          goalDistances = [point_distance(c.x, c.y, g.x, g.y) for g in self.r_player.goalCoord if g.pawn != 2]
+          # print("goal distances red:", goalDistances)
+          val += min(goalDistances) if len(goalDistances) > 0 else -50
     
     
     ## Ini dari Nanda nyoba ganti2, belom fix nanti mau diomongin dulu wkwk ##
 
 
-    for x in range(self.boardSize):
-      for y in range(self.boardSize):
-        c = self.coordinate[y][x]
-        # print(c.x, c.y)
-        if (c.pawn == 1):
-          # print(c.x, c.y)
-          goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 1]
-          # print('Distances')
-          # print(goalDistances)
-          val -= max(goalDistances) if len(goalDistances) > 0 else 0
-          # print(val)
+    # for x in range(self.boardSize):
+    #   for y in range(self.boardSize):
+    #     c = self.coordinate[y][x]
+    #     # print(c.x, c.y)
+    #     if (c.pawn == 1):
+    #       # print(c.x, c.y)
+    #       goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 1]
+    #       # print('Distances')
+    #       # print(goalDistances)
+    #       val -= max(goalDistances) if len(goalDistances) > 0 else 0
+    #       # print(val)
 
-        elif (c.pawn == 2):
-          goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 2]
-          # print('Distances')
-          # print(goalDistances)
-          val += max(goalDistances) if len(goalDistances) > 0 else 0
-          # print(val)
+    #     elif (c.pawn == 2):
+    #       goalDistances = [point_distance(c.x, c.y, g[0], g[1]) for g in player.goal if self.coordinate[g[0]][g[1]].pawn != 2]
+    #       # print('Distances')
+    #       # print(goalDistances)
+    #       val += max(goalDistances) if len(goalDistances) > 0 else 0
+    #       # print(val)
         
     # print("val dari obj func", val)
     if player.color == "RED":
@@ -256,19 +259,15 @@ class Board:
     return val
 
   def minimax(self, depth, playermax, playermin, timelimit, a=float("-inf"), b=float("inf"), isMax=True):
-    # Bottomed out base case
+    # basis
     if depth == 0 or time.time() > timelimit:
       return self.objectiveFunc(playermax), None
 
-    # Setup initial variables and find moves
     bestmove = None
     if isMax:
-      # print('Max')
       bestval = float("-inf")
-      # print(playermax.color)
-      possiblemoves = self.getPlayerMoves(playermax)
-      # print("dari minimax")
-      # possiblemoves = self.localSearch(playermax)
+      # possiblemoves = self.getPlayerMoves(playermax)
+      possiblemoves = self.localSearch(playermax)
       # for move in possiblemoves:
       #   print('-------------------------')
       #   print('FROM: ', move['from'].x, ", ", move['from'].y)
@@ -276,15 +275,11 @@ class Board:
       #     print('TO: ', tos.x, ", ", tos.y)
         
     else:
-      # print('Min')
       bestval = float("inf")
-      # print(playermin.color)
-      possiblemoves = self.getPlayerMoves(playermin)
-      # print("dari minimax")
-      # possiblemoves = self.localSearch(playermin)
+      # possiblemoves = self.getPlayerMoves(playermin)
+      possiblemoves = self.localSearch(playermin)
 
-    # For each move
-    # print(possiblemoves)
+    # untuk setiap move yang mungkin
     for move in possiblemoves:
       for to in move["to"]:
 
@@ -293,41 +288,27 @@ class Board:
         # print("FROM: ", move['from'].x, ", ", move['from'].y)
         # print("TO: ", to.x, ", ", to.y)
 
-        # Bail out when we're out of time
+        # keluar apabila melebihi timelimit
         if time.time() > timelimit:
           return bestval, bestmove
 
-        # Move piece to the move outlined
-        # pawn = move["from"].pawn
-        # move["from"].pawn = 0
-        # to.pawn = pawn
-        # temp = copy.deepcopy(move["from"])
-        # print("minimax before")
-        # print("from", move["from"].x, move["from"].y)
-        # print("to", to.x, to.y)
-        # print("dari minimax")
+        # memindahkan sementara pion
+        # print("bestval sebelum rekursif", bestval)
+        # print("from", move["from"].x+1, move["from"].y+1)
+        # print("to", to.x+1, to.y+1)
         self.tempMovePawn((move["from"].y+1, move["from"].x+1), (to.y+1, to.x+1))
 
-        # Recursively call self
+        # minimax rekursif
         val, _ = self.minimax(depth - 1, playermax, playermin, timelimit, a, b, not isMax)
 
-        # Move the piece back
-        # to.pawn = 0
-        # move["from"].pawn = pawn
-        # print("dari minimax")
+        # mengembalikan pion ke tempat semula
         self.tempMovePawn((to.y+1, to.x+1), (move["from"].y+1, move["from"].x+1))
-        # print("minimax after")
-        # print("from", move["from"].x, move["from"].y)
-        # print("to", to.x, to.y)
 
         # print("val setelah rekursif", val)
         # print("bestval setelah rekursif", bestval)
         # print("from setelah rekursif", (move["from"].x+1, move["from"].y+1))
         # print("to setelah rekursif", (to.x+1, to.y+1))
         # print("----------------------")
-
-        # print('Val: ', val)
-        # print('bestval: ', bestval)
 
         if isMax and val > bestval:
           # print("masuk max")
@@ -336,6 +317,7 @@ class Board:
           # print("bestmove", bestmove)
           # print("a", a)
           # print("val", val)
+          # print("------------------")
           a = max(a, val)
 
         if not isMax and val < bestval:
@@ -345,15 +327,21 @@ class Board:
           # print("bestmove", bestmove)
           # print("b", b)
           # print("val", val)
+          # print("------------------")
           b = min(b, val)
 
         if b <= a:
-          # print("bestmove", bestmove)
+          # print("masuk ab pruning")
+          # print("bestmove yang direturn di pruning", bestmove)
+          # print("-------------------")
           return bestval, bestmove
     
-    # print("bestmove", bestmove)
+    # print("bestvalue akhir yg direturn", bestval)
+    # print("bestmove akhir yg direturn", bestmove)
     return bestval, bestmove
 
+  # localsearch mengurangi jumlah move yang dapat diambil dari sebuah pion
+  # dengan mengambil langkah tujuan yang memiliki value obj function paling besar
   def localSearch(self, player):
     possiblemoves = []
     for p in player.pawns:
@@ -363,41 +351,47 @@ class Board:
         continue
       else:
         temp = copy.deepcopy(p)
-        # print("pawn", p.x, p.y)
-        # print("validactions", validactions)
         (x, y) = validactions[0]
         validactions.remove((x, y))
-        # print("dari localsearch")
+
         self.tempMovePawn((p.y, p.x), (y, x))
         bestval = self.objectiveFunc(player)
-        # print("dari localsearch")
         self.tempMovePawn((y, x), (temp.y, temp.x))
-        # print("pawn", p.x, p.y)
         moves.append((x, y))
+        
         for va in validactions:
           self.tempMovePawn((p.y, p.x), (va[1], va[0]))
           val = self.objectiveFunc(player)
           self.tempMovePawn((va[1], va[0]), (temp.y, temp.x))
-          if (val > bestval):
-            moves.clear()
-            moves.append((va[0], va[1]))
-            bestval = val
-          elif (val == bestval):
-            moves.append((va[0], va[1]))
+
+          if ((player.color == self.player1.color and self.turn == 1) or (player.color == self.player2.color and self.turn == 2)):
+            if (val > bestval):
+              moves.clear()
+              moves.append((va[0], va[1]))
+              bestval = val
+            elif (val == bestval):
+              moves.append((va[0], va[1]))
+          else:
+            if (val < bestval):
+              moves.clear()
+              moves.append((va[0], va[1]))
+              bestval = val
+            elif (val == bestval):
+              moves.append((va[0], va[1]))
+        
         curr_tile = self.coordinate[p.y-1][p.x-1]
-        # print("from", (p.x,p.y))
         move = {
           "from": curr_tile,
           "to": self.getMovesCoord(moves)
         }
         possiblemoves.append(move)
+    
     return possiblemoves
           
   def getPlayerMoves(self, player):
     moves = []  # All possible moves
     for p in player.pawns:
       curr_tile = self.coordinate[p.y-1][p.x-1]
-      # print("from", (p.x,p.y))
       move = {
         "from": curr_tile,
         "to": self.getMovesCoord(self.getAksiValid(p))
@@ -407,23 +401,21 @@ class Board:
 
   def getMovesCoord(self, validactions):
     moves = []
-    # print("to", validactions)
     for l in validactions:
-      # print("l", l)
       el = self.coordinate[l[1]-1][l[0]-1]
-      # print("el", el.x, el.y)
       moves.append(el)
     return moves
 
   def movePawn(self, from_coord, to_coord):
     from_tile = self.coordinate[from_coord[0]-1][from_coord[1]-1]
     to_tile = self.coordinate[to_coord[0]-1][to_coord[1]-1]
-    # Handle trying to move a non-existant piece and moving into a piece
+    
+    # apabila pindah dari tile kosong atau pindah menuju tile yang ada pionnya
     if from_tile.pawn == 0 or to_tile.pawn != 0:
       print("Invalid move pawn!")
       return
 
-    # Move piece
+    # memindahkan pion
     if from_tile.pawn == 1:
       self.g_player.movePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
     elif from_tile.pawn == 2:
@@ -438,7 +430,7 @@ class Board:
     from_tile = self.coordinate[from_coord[0]-1][from_coord[1]-1]
     to_tile = self.coordinate[to_coord[0]-1][to_coord[1]-1]
     
-    # Move piece
+    # memindahkan sementara pion
     if from_tile.pawn == 1:
       self.g_player.tempMovePawn((from_tile.x+1, from_tile.y+1), (to_tile.x+1, to_tile.y+1))
     elif from_tile.pawn == 2:
@@ -450,72 +442,26 @@ class Board:
     from_tile.pawn = 0
 
   def executeBotMove(self):
-
-    # Print out search information
-    # current_turn = (self.total_plies // 2) + 1
-    # print("Turn", current_turn, "Computation")
-    # print("=================" + ("=" * len(str(current_turn))))
-    # print("Executing search ...", end=" ")
-    # sys.stdout.flush()
-
-    # self.board_view.set_status("Computing next move...")
-    # self.computing = True
-    # self.board_view.update()
     max_time = time.time() + self.timelimit
 
-    # Execute minimax search
-    # start = time.time()
-    _, move = self.minimax(self.depth, self.bot, self.player, max_time)
-    # end = time.time()
+    # memanggil fungsi minimax search
+    if (self.selfplay):
+      playermax = self.player1 if self.turn == 1 else self.player2
+      playermin = self.player2 if self.turn == 1 else self.player1
+    else:
+      playermax = self.player2
+      playermin = self.player1
+    _, move = self.minimax(self.depth, playermax, playermin, max_time)
 
-    # Print search result stats
-    # print("complete")
-    # print("Time to compute:", round(end - start, 4))
-    # print("Total boards generated:", boards)
-    # print("Total prune events:", prunes)
-
-    # Move the resulting piece
-    # self.outline_tiles(None)  # Reset outlines
+    # memindahkan pion
     if move is None:
       print("Status: no action taken")
     else:
-      move_from = move[0]
-      move_to = move[1]
-      self.movePawn(move_from, move_to)
-      print("Status: Pawn", move_from, "moved to", move_to)
-
-    # self.board_view.draw_tiles(board=self.board)  # Refresh the board
-
-    # winner = self.find_winner()
-    # if winner:
-    #     self.board_view.set_status("The " + ("green"
-    #         if winner == Tile.P_GREEN else "red") + " player has won!")
-    #     self.board_view.set_status_color("#212121")
-    #     self.current_player = None
-    #     self.current_player = None
-
-    #     print()
-    #     print("Final Stats")
-    #     print("===========")
-    #     print("Final winner:", "green"
-    #         if winner == Tile.P_GREEN else "red")
-    #     print("Total # of plies:", self.total_plies)
-
-    # else:  # Toggle the current player
-    #     self.current_player = (Tile.P_RED
-    #         if self.current_player == Tile.P_GREEN else Tile.P_GREEN)
-
-    # self.computing = False
-    # print()
+      (x1, y1) = move[0]
+      (x2, y2) = move[1]
+      self.movePawn((x1, y1), (x2, y2))
+      print("Status: Pawn", (y1, x1), "moved to", (y2, x2))
 
   def getMoveFromTile(self, player, x, y):
     p = player.getPawn(x, y)
     return self.getAksiValid(p)
-
-# board = Board(8, 100, "GREEN", "CMD")
-
-
-
-# if __name__ == "__main__":      
-#   board = Board(8, 100, "GREEN", "CMD")
-#   board.printBoard()
