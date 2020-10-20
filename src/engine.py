@@ -53,6 +53,7 @@ class Engine:
             else:
                 # BOT VS BOT GUI MODE
                 self.gui = BoardGUI(self.board)
+                # self.gui.mainloop()
                 while (self.terminate_state() == 0):
                     self.gui.drawPawn()
                     if (self.turn == 2):
@@ -61,7 +62,7 @@ class Engine:
                         self.board.executeBotMove()
                     self.turn = 2 if self.turn == 1 else 1
                     self.board.turn = 2 if self.board.turn == 1 else 1
-                self.gui.mainloop()
+                
         else:
             # BOT VS USER GUI MODE
             if (self.system == "CMD"):
@@ -126,11 +127,13 @@ class Engine:
             else:
                 # BOT VS USER GUI MODE
                 self.gui = BoardGUI(self.board)
-                self.gui.mainloop()
+                # self.gui.mainloop()
+                self.gui.move = True
                 while (self.terminate_state() == 0):
                     if (self.turn == 2 and not(self.gui.move)):
                         self.board.executeBotMove()
                         self.gui.drawPawn()
+                        self.gui.move = True
                     else:
                         self.gui.drawPawn()
                         # self.gui.move = False
@@ -188,7 +191,6 @@ class BoardGUI(tk.Tk):
         self.rowconfigure(self.board_size + 1, minsize=50)
         self.canvas.bind("<Configure>", self.drawTiles)
         self.board.selected_tuple= None
-        self.move = False
     
     def drawTiles(self, event=None):
         self.canvas.delete("tile")
@@ -235,7 +237,6 @@ class BoardGUI(tk.Tk):
         self.drawPawn()
 
     def drawPawn(self):
-        self.move = True
         canvas_width = 600
         canvas_height = 600
         border_size = 10
@@ -276,11 +277,9 @@ class BoardGUI(tk.Tk):
             self.canvas.tag_bind(pawn, "<1>")
 
         # update pawn's coordinate everytime it moves
-        # self.update()
-        print(self.move)
+        self.update()
 
     def clicked(self, row, column):
-        print(self.move)
         tile = self.tiles[column -1, row-1]
         toBeBordered = []
         toBeBordered.append(tile)
@@ -324,8 +323,8 @@ class BoardGUI(tk.Tk):
                     self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
             self.board.selected_tuple = None
             self.move = False
+            
             # print(self.board.selected_tuple)
-            print(self.move)
         else:
             # print(self.board.selected_tuple)
             self.board.selected_tuple = None
@@ -335,6 +334,7 @@ class BoardGUI(tk.Tk):
             for i in range (self.board_size):
                 for j in range (self.board_size):
                     self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
+        self.update()
 
 
 
