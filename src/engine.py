@@ -394,7 +394,7 @@ if __name__ == "__main__":
         print("boardsize: 8, 10, 16")
         print("timelimit: any number in second")
         print("gamesystem: CMD/GUI")
-        print("player: RED/GREEN")
+        print("player: RED/GREEN. Leave it blank to run bot vs bot")
         exit()
 
     boardsize, timelimit, system = sys.argv[1:4]
@@ -421,7 +421,7 @@ if __name__ == "__main__":
         if player not in ["RED", "GREEN"]:
             print("player should be RED/GREEN")
             exit()
-        print("What bot do you want to fight? [Minimax/MinimaxLocalSearch]")
+        print("Which bot do you want to fight? [Minimax/MinimaxLocalSearch]")
         bot = input("Write the abbreviation of choices above [M/MLS]: ")
 
         bot = bot.upper()
