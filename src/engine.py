@@ -17,7 +17,7 @@ class Engine:
             self.player2 = Player("GREEN", boardsize)
             self.selfplay = True
         
-        self.board = Board(boardsize, timelimit, self.player, self.bot)
+        self.board = Board(boardsize, timelimit, self.player1, self.player2, self.selfplay) 
         self.turn = 1 #1 for player, 2 for bot
         if (system == "GUI"):
             self.system = "GUI"
@@ -207,8 +207,8 @@ class BoardGUI(tk.Tk):
         canvas_height = 600
         border_size = 10
         cell = int(canvas_height / self.board_size)
-        self.player1Pawn = self.board.player.pawns
-        self.player2Pawn = self.board.bot.pawns
+        self.player1Pawn = self.board.player1.pawns
+        self.player2Pawn = self.board.player2.pawns
         # self.board.player.printStatus()
         # self.board.bot.printStatus()
         # delete previous pawns canvas
@@ -222,7 +222,7 @@ class BoardGUI(tk.Tk):
             x2 = (col + 1) * cell - border_size / 2
             y2 = (row + 1) * cell - border_size / 2
             # print("pion player 1 ke-" + str(i) + " col = " + str(col) + " row = " + str(row))
-            if (self.board.player.color == "GREEN"):
+            if (self.board.player1.color == "GREEN"):
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#67BF9B")
             else:
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#CF6E67")
@@ -236,7 +236,7 @@ class BoardGUI(tk.Tk):
             x2 = (col + 1) * cell - border_size / 2
             y2 = (row + 1) * cell - border_size / 2
             # print("pion player 2 ke-" + str(i) + " col = " + str(col) + " row = " + str(row))
-            if (self.board.player.color == "GREEN"):
+            if (self.board.player1.color == "GREEN"):
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#CF6E67")
             else:
                 pawn = self.canvas.create_oval(x1, y1, x2, y2, tags="pawn", width=0, fill="#67BF9B")
@@ -249,7 +249,7 @@ class BoardGUI(tk.Tk):
         tile = self.tiles[row -1, column-1]
         toBeBordered = []
         toBeBordered.append(tile)
-        if (self.board.selected_tuple == None and self.board.player.isExist_pawns(row, column)):
+        if (self.board.selected_tuple == None and self.board.player1.isExist_pawns(row, column)):
             for i in range (self.board_size):
                 for j in range (self.board_size):
                     if (i == row-1 and j == column-1):
@@ -257,10 +257,10 @@ class BoardGUI(tk.Tk):
                     else:
                         self.canvas.itemconfigure(self.tiles[i,j], outline="black", width = 0)
 
-            if (self.board.player.isExist_pawns(column, row)):
-                pawn = self.board.player.getPawn(column, row)
-            elif (self.board.bot.isExist_pawns(column, row)):
-                pawn = self.board.bot.getPawn(column, row)
+            if (self.board.player1.isExist_pawns(column, row)):
+                pawn = self.board.player1.getPawn(column, row)
+            elif (self.board.player2.isExist_pawns(column, row)):
+                pawn = self.board.player2.getPawn(column, row)
 
             validMoves = self.board.getAksiValid(pawn)
             print("valid moves = ", validMoves)
@@ -277,11 +277,11 @@ class BoardGUI(tk.Tk):
             print(self.board.selected_tuple)
             
 
-        elif (self.board.selected_tuple != None and (column, row) in self.board.getAksiValid(self.board.player.getPawn(self.board.selected_tuple[0], self.board.selected_tuple[1]))):
+        elif (self.board.selected_tuple != None and (column, row) in self.board.getAksiValid(self.board.player1.getPawn(self.board.selected_tuple[0], self.board.selected_tuple[1]))):
             (x,y) = self.board.selected_tuple
             print(row, column)
             print(self.board.selected_tuple[0])
-            print(self.board.getAksiValid(self.board.player.getPawn(x, y)))
+            print(self.board.getAksiValid(self.board.player1.getPawn(x, y)))
             self.board.movePawn((self.board.selected_tuple[1], self.board.selected_tuple[0]), (row,column))
             self.drawPawn()
             for i in range (self.board_size):
